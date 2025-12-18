@@ -1,0 +1,20 @@
+use bevy::prelude::*;
+
+pub mod assets;
+pub mod world;
+
+pub struct GamePlugin;
+
+impl Plugin for GamePlugin {
+    fn build(&self, app: &mut App) {
+        app.add_plugins(assets::AssetsPlugin)
+           .add_plugins(world::WorldPlugin);
+
+        // Add startup system
+        app.add_systems(Startup, setup);
+    }
+}
+
+fn setup(mut commands: Commands) {
+    commands.spawn(Camera2dBundle::default());
+}

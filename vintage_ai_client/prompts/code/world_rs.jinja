@@ -1,0 +1,28 @@
+use bevy::prelude::*;
+use serde::Deserialize;
+
+pub struct WorldPlugin;
+
+impl Plugin for WorldPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, load_world_data);
+    }
+}
+
+#[derive(Debug, Deserialize, Resource)]
+pub struct WorldData {
+    // Structure matching generated JSON
+    pub regions: Vec<RegionData>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct RegionData {
+    pub name: String,
+    // Add other fields
+}
+
+fn load_world_data(mut commands: Commands) {
+    // In a real implementation, we would load the JSON file here
+    // For now we just print
+    info!("Initializing world...");
+}

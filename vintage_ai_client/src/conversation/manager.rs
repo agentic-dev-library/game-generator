@@ -54,19 +54,24 @@ impl ConversationManager {
     pub async fn init_templates(&mut self, templates_dir: PathBuf) -> Result<()> {
         let mut env = Environment::new();
 
-        // Load all templates from directory
-        for entry in std::fs::read_dir(&templates_dir)? {
-            let entry = entry?;
-            let path = entry.path();
+        // Load all templates from directory recursively
+        let mut dirs = vec![templates_dir.clone()];
+        while let Some(dir) = dirs.pop() {
+            for entry in std::fs::read_dir(dir)? {
+                let entry = entry?;
+                let path = entry.path();
 
-            if path.extension() == Some(std::ffi::OsStr::new("jinja")) {
-                let name = path
-                    .file_stem()
-                    .and_then(|s| s.to_str())
-                    .ok_or_else(|| anyhow::anyhow!("Invalid template name"))?;
+                if path.is_dir() {
+                    dirs.push(path);
+                } else if path.extension() == Some(std::ffi::OsStr::new("jinja")) {
+                    let name = path
+                        .file_stem()
+                        .and_then(|s| s.to_str())
+                        .ok_or_else(|| anyhow::anyhow!("Invalid template name"))?;
 
-                let content = std::fs::read_to_string(&path)?;
-                env.add_template_owned(name.to_string(), content)?;
+                    let content = std::fs::read_to_string(&path)?;
+                    env.add_template_owned(name.to_string(), content)?;
+                }
             }
         }
 

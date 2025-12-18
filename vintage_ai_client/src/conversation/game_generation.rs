@@ -216,7 +216,7 @@ impl GameGenerationExt for ConversationManager {
             message: "Putting it all together...".to_string(),
         });
 
-        // TODO: Implement integration
+        integrate_components(self, &project_path, config, &world_data).await?;
 
         // Phase 8: Packaging
         progress_callback(GenerationProgress {
@@ -345,6 +345,49 @@ fn save_world_data(project_path: &Path, world_data: &WorldData) -> Result<()> {
     std::fs::create_dir_all(world_dir.join("regions"))?;
     std::fs::create_dir_all(world_dir.join("towns"))?;
     std::fs::create_dir_all(world_dir.join("dungeons"))?;
+
+    Ok(())
+}
+
+async fn integrate_components(
+    manager: &ConversationManager,
+    project_path: &Path,
+    config: &GameConfig,
+    world_data: &WorldData,
+) -> Result<()> {
+    let src_dir = project_path.join("src");
+    std::fs::create_dir_all(&src_dir)?;
+
+    // Map of template name -> output filename
+    let templates = [
+        ("cargo_toml", "Cargo.toml"),
+        ("main_rs", "src/main.rs"),
+        ("lib_rs", "src/lib.rs"),
+        ("assets_rs", "src/assets.rs"),
+        ("world_rs", "src/world.rs"),
+    ];
+
+    if let Some(env) = manager.template_env.lock().await.as_ref() {
+        for (template_name, output_file) in templates {
+            // Get template
+            let template = env
+                .get_template(template_name)
+                .map_err(|e| anyhow::anyhow!("Template {} not found: {}", template_name, e))?;
+
+            // Render template
+            let rendered = template.render(context!(
+                project_name => config.name.to_lowercase().replace(" ", "_"),
+                config => config,
+                world => world_data
+            ))?;
+
+            // Write to file
+            let out_path = project_path.join(output_file);
+            std::fs::write(out_path, rendered)?;
+        }
+    } else {
+        return Err(anyhow::anyhow!("Template environment not initialized"));
+    }
 
     Ok(())
 }

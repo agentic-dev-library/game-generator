@@ -1,0 +1,10 @@
+/app/target/debug/deps/eventsource_stream-439e2ca3e27de3ca.d: /home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/lib.rs /home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/event.rs /home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/event_stream.rs /home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/parser.rs /home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/traits.rs /home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/utf8_stream.rs
+
+/app/target/debug/deps/libeventsource_stream-439e2ca3e27de3ca.rmeta: /home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/lib.rs /home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/event.rs /home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/event_stream.rs /home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/parser.rs /home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/traits.rs /home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/utf8_stream.rs
+
+/home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/lib.rs:
+/home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/event.rs:
+/home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/event_stream.rs:
+/home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/parser.rs:
+/home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/traits.rs:
+/home/jules/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/eventsource-stream-0.2.3/src/utf8_stream.rs:
