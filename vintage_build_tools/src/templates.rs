@@ -14,13 +14,13 @@ impl TemplateProcessor {
     pub fn new(template_dir: &str, output_dir: &str) -> Result<Self> {
         // Ensure output directory exists
         fs::create_dir_all(output_dir)?;
-        
+
         Ok(Self {
             template_dir: template_dir.to_string(),
             output_dir: output_dir.to_string(),
         })
     }
-    
+
     /// Generate Rust modules from templates
     pub fn generate_modules(
         &self,
@@ -31,7 +31,7 @@ impl TemplateProcessor {
         timeline_end: i32,
     ) -> Result<()> {
         println!("Generating Rust modules from templates...");
-        
+
         // Template files to process
         let template_files = [
             ("mod.rs.jinja", "mod.rs"),
@@ -40,7 +40,7 @@ impl TemplateProcessor {
             ("eras.rs.jinja", "eras.rs"),
             ("graph.rs.jinja", "graph.rs"),
         ];
-        
+
         // Create template context
         let context = serde_json::json!({
             "games": timeline_games,
@@ -49,28 +49,29 @@ impl TemplateProcessor {
             "timeline_start": timeline_start,
             "timeline_end": timeline_end
         });
-        
+
         // Generate each module file
         for (template_file, output_file) in template_files.iter() {
             // Create a new environment for each template to avoid lifetime issues
             let mut env = Environment::new();
-            
+
             let template_path = Path::new(&self.template_dir).join(template_file);
-            let template_content = fs::read_to_string(&template_path)
-                .with_context(|| format!("Failed to read template file: {}", template_path.display()))?;
-            
+            let template_content = fs::read_to_string(&template_path).with_context(|| {
+                format!("Failed to read template file: {}", template_path.display())
+            })?;
+
             // Add and immediately use the template
             env.add_template(template_file, &template_content)?;
             let tmpl = env.get_template(template_file)?;
             let module_content = tmpl.render(&context)?;
-            
+
             let output_path = Path::new(&self.output_dir).join(output_file);
             fs::write(&output_path, module_content)?;
             println!("  Generated: {}", output_path.display());
         }
-        
+
         Ok(())
     }
-    
+
     // JSON generation removed - all data is now compiled into Rust modules
 }

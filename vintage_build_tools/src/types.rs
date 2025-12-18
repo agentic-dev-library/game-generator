@@ -7,8 +7,16 @@ pub const USER_AGENT: &str = "VintageGameGenerator/1.0";
 pub const RESULTS_PER_PAGE: u32 = 100;
 pub const TOP_GENRES_PER_YEAR: usize = 3;
 pub const VINTAGE_PLATFORMS: &[&str] = &[
-    "Arcade", "NES", "Game Boy", "SNES", "Genesis", 
-    "PC", "Amiga", "Commodore 64", "Apple II", "MSX"
+    "Arcade",
+    "NES",
+    "Game Boy",
+    "SNES",
+    "Genesis",
+    "PC",
+    "Amiga",
+    "Commodore 64",
+    "Apple II",
+    "MSX",
 ];
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -61,7 +69,7 @@ pub struct ImageInfo {
     pub tiny_url: Option<String>,
     pub original_url: String,
     #[serde(default)]
-    pub image_tags: Option<String>,  // Changed from Vec<ImageTag> to String
+    pub image_tags: Option<String>, // Changed from Vec<ImageTag> to String
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -134,23 +142,23 @@ where
     D: serde::Deserializer<'de>,
 {
     use serde::de::{self, Visitor};
-    
+
     struct StringOrU64Visitor;
-    
+
     impl<'de> Visitor<'de> for StringOrU64Visitor {
         type Value = Option<u64>;
-        
+
         fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
             formatter.write_str("a string or u64")
         }
-        
+
         fn visit_none<E>(self) -> Result<Self::Value, E>
         where
             E: de::Error,
         {
             Ok(None)
         }
-        
+
         fn visit_some<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
         where
             D: serde::Deserializer<'de>,
@@ -158,25 +166,26 @@ where
             deserializer.deserialize_any(InnerVisitor)
         }
     }
-    
+
     struct InnerVisitor;
-    
+
     impl<'de> Visitor<'de> for InnerVisitor {
         type Value = Option<u64>;
-        
+
         fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
             formatter.write_str("a string or u64")
         }
-        
+
         fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
         where
             E: de::Error,
         {
-            value.parse::<u64>()
+            value
+                .parse::<u64>()
                 .map(Some)
                 .map_err(|_| de::Error::custom(format!("cannot parse '{}' as u64", value)))
         }
-        
+
         fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
         where
             E: de::Error,
@@ -184,6 +193,6 @@ where
             Ok(Some(value))
         }
     }
-    
+
     deserializer.deserialize_option(StringOrU64Visitor)
 }
