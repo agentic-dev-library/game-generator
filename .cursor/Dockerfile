@@ -1,5 +1,5 @@
 # Use official Rust 1.92.0 (latest stable) image as base
-FROM rust:1.92.0-bookworm
+FROM rust:1.92.0-trixie
 
 WORKDIR /workspace
 
