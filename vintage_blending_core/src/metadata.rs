@@ -76,17 +76,18 @@ impl MetadataBuilder {
         
         // Extract genre from game data
         if let Some(genre_str) = game_data["genre"].as_str() {
-            if let Some(&idx) = self.genre_indices.get(&genre_str.to_lowercase()) {
+            let genre_lower = genre_str.to_lowercase();
+            if let Some(&idx) = self.genre_indices.get(&genre_lower) {
                 genre_weights[idx] = 1.0;
                 
-                // Add sub-genre weights based on common patterns
-                match genre_str {
-                    "Action" => {
+                // Add sub-genre weights based on common patterns (case-insensitive)
+                match genre_lower.as_str() {
+                    "action" => {
                         if let Some(&idx) = self.genre_indices.get("platform") {
                             genre_weights[idx] = 0.3;
                         }
                     },
-                    "RPG" => {
+                    "rpg" => {
                         if let Some(&idx) = self.genre_indices.get("adventure") {
                             genre_weights[idx] = 0.5;
                         }
@@ -127,30 +128,30 @@ impl MetadataBuilder {
         })
     }
     
-    /// Infer mechanics from genre
+    /// Infer mechanics from genre (case-insensitive)
     fn infer_mechanics_from_genre(&self, genre: &str, mechanic_flags: &mut [bool]) {
-        match genre {
-            "Action" => {
+        match genre.to_lowercase().as_str() {
+            "action" => {
                 self.set_mechanic_flag("Combat", mechanic_flags, true);
                 self.set_mechanic_flag("Real-Time", mechanic_flags, true);
             },
-            "RPG" => {
+            "rpg" => {
                 self.set_mechanic_flag("Character Progression", mechanic_flags, true);
                 self.set_mechanic_flag("Exploration", mechanic_flags, true);
                 self.set_mechanic_flag("Story Choices", mechanic_flags, true);
             },
-            "Strategy" => {
+            "strategy" => {
                 self.set_mechanic_flag("Resource Management", mechanic_flags, true);
                 self.set_mechanic_flag("Turn-Based", mechanic_flags, true);
             },
-            "Platform" => {
+            "platform" => {
                 self.set_mechanic_flag("Platform Jumping", mechanic_flags, true);
                 self.set_mechanic_flag("Collection", mechanic_flags, true);
             },
-            "Puzzle" => {
+            "puzzle" => {
                 self.set_mechanic_flag("Puzzle Solving", mechanic_flags, true);
             },
-            "Shooter" => {
+            "shooter" => {
                 self.set_mechanic_flag("Combat", mechanic_flags, true);
                 self.set_mechanic_flag("Real-Time", mechanic_flags, true);
             },
@@ -192,17 +193,17 @@ impl MetadataBuilder {
         }
     }
     
-    /// Calculate game complexity
+    /// Calculate game complexity (case-insensitive genre matching)
     fn calculate_complexity(&self, game_data: &Value) -> f32 {
-        let genre = game_data["genre"].as_str().unwrap_or("Action");
+        let genre = game_data["genre"].as_str().unwrap_or("Action").to_lowercase();
         let year = game_data["year"].as_u64().unwrap_or(1985) as u32;
         
         // Base complexity from genre
-        let base_complexity = match genre {
-            "Strategy" | "RPG" | "Simulation" => 0.8,
-            "Adventure" | "Fighting" => 0.6,
-            "Action" | "Platform" | "Shooter" => 0.4,
-            "Puzzle" | "Sports" => 0.3,
+        let base_complexity = match genre.as_str() {
+            "strategy" | "rpg" | "simulation" => 0.8,
+            "adventure" | "fighting" => 0.6,
+            "action" | "platform" | "shooter" => 0.4,
+            "puzzle" | "sports" => 0.3,
             _ => 0.5,
         };
         
@@ -212,47 +213,47 @@ impl MetadataBuilder {
         (base_complexity + era_modifier).min(1.0)
     }
     
-    /// Calculate action vs strategy balance
+    /// Calculate action vs strategy balance (case-insensitive genre matching)
     fn calculate_action_strategy_balance(&self, game_data: &Value) -> f32 {
-        let genre = game_data["genre"].as_str().unwrap_or("Action");
+        let genre = game_data["genre"].as_str().unwrap_or("Action").to_lowercase();
         
-        match genre {
-            "Action" | "Shooter" | "Platform" => -0.8,
-            "Fighting" | "Racing" => -0.6,
-            "Sports" => -0.4,
-            "Adventure" => 0.0,
-            "RPG" => 0.2,
-            "Puzzle" => 0.4,
-            "Simulation" => 0.6,
-            "Strategy" => 0.8,
+        match genre.as_str() {
+            "action" | "shooter" | "platform" => -0.8,
+            "fighting" | "racing" => -0.6,
+            "sports" => -0.4,
+            "adventure" => 0.0,
+            "rpg" => 0.2,
+            "puzzle" => 0.4,
+            "simulation" => 0.6,
+            "strategy" => 0.8,
             _ => 0.0,
         }
     }
     
-    /// Calculate single vs multiplayer balance
+    /// Calculate single vs multiplayer balance (case-insensitive genre matching)
     fn calculate_single_multi_balance(&self, game_data: &Value) -> f32 {
-        let genre = game_data["genre"].as_str().unwrap_or("Action");
+        let genre = game_data["genre"].as_str().unwrap_or("Action").to_lowercase();
         
         // Most vintage games were single-player focused
-        match genre {
-            "Fighting" | "Sports" => 0.8, // Multiplayer-focused
-            "Racing" => 0.4,
-            "Action" | "Platform" => -0.4,
-            "RPG" | "Adventure" | "Strategy" => -0.8, // Single-player focused
+        match genre.as_str() {
+            "fighting" | "sports" => 0.8, // Multiplayer-focused
+            "racing" => 0.4,
+            "action" | "platform" => -0.4,
+            "rpg" | "adventure" | "strategy" => -0.8, // Single-player focused
             _ => -0.5,
         }
     }
     
-    /// Extract mechanic tags from game data
+    /// Extract mechanic tags from game data (case-insensitive genre matching)
     fn extract_mechanic_tags(&self, game_data: &Value) -> Vec<String> {
         let mut tags = Vec::new();
         
         if let Some(genre) = game_data["genre"].as_str() {
-            match genre {
-                "Action" => tags.extend_from_slice(&["Combat".to_string(), "Real-Time".to_string()]),
-                "RPG" => tags.extend_from_slice(&["Character Progression".to_string(), "Exploration".to_string()]),
-                "Strategy" => tags.extend_from_slice(&["Resource Management".to_string(), "Turn-Based".to_string()]),
-                "Platform" => tags.extend_from_slice(&["Platform Jumping".to_string(), "Collection".to_string()]),
+            match genre.to_lowercase().as_str() {
+                "action" => tags.extend_from_slice(&["Combat".to_string(), "Real-Time".to_string()]),
+                "rpg" => tags.extend_from_slice(&["Character Progression".to_string(), "Exploration".to_string()]),
+                "strategy" => tags.extend_from_slice(&["Resource Management".to_string(), "Turn-Based".to_string()]),
+                "platform" => tags.extend_from_slice(&["Platform Jumping".to_string(), "Collection".to_string()]),
                 _ => {}
             }
         }
@@ -260,24 +261,24 @@ impl MetadataBuilder {
         tags
     }
     
-    /// Compute genre affinities
+    /// Compute genre affinities (case-insensitive genre matching)
     fn compute_genre_affinities(&self, game_data: &Value) -> HashMap<String, f32> {
         let mut affinities = HashMap::new();
         
         if let Some(genre) = game_data["genre"].as_str() {
             affinities.insert(genre.to_string(), 1.0);
             
-            // Add related genres
-            match genre {
-                "Action" => {
+            // Add related genres (case-insensitive matching)
+            match genre.to_lowercase().as_str() {
+                "action" => {
                     affinities.insert("Platform".to_string(), 0.5);
                     affinities.insert("Shooter".to_string(), 0.6);
                 },
-                "RPG" => {
+                "rpg" => {
                     affinities.insert("Adventure".to_string(), 0.7);
                     affinities.insert("Strategy".to_string(), 0.4);
                 },
-                "Platform" => {
+                "platform" => {
                     affinities.insert("Action".to_string(), 0.6);
                     affinities.insert("Puzzle".to_string(), 0.3);
                 },

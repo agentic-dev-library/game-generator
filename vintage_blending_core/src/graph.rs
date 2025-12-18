@@ -80,7 +80,8 @@ impl GameGraph {
             sub_lookup.insert(game_id.clone(), idx);
         }
         
-        // Add edges from original graph
+        // Add edges from original graph with negated weights for max spanning tree
+        // We negate weights because min_spanning_tree finds minimum, but we want maximum compatibility
         for i in 0..game_ids.len() {
             for j in (i + 1)..game_ids.len() {
                 let game1_id = &game_ids[i];
@@ -93,17 +94,18 @@ impl GameGraph {
                     let weight = self.graph[edge];
                     let sub_idx1 = sub_lookup[game1_id];
                     let sub_idx2 = sub_lookup[game2_id];
-                    subgraph.add_edge(sub_idx1, sub_idx2, weight);
+                    // Negate weight to convert min spanning tree to max spanning tree
+                    subgraph.add_edge(sub_idx1, sub_idx2, -weight);
                 }
             }
         }
         
-        // Find minimum spanning tree to connect all games optimally
+        // Find minimum spanning tree (with negated weights, this gives us max spanning tree)
         let mst = min_spanning_tree(&subgraph);
         let mst_graph = Graph::<String, f32>::from_elements(mst);
         
-        // Calculate total compatibility
-        let total_compatibility = mst_graph.edge_weights().sum();
+        // Calculate total compatibility (negate back to get positive values)
+        let total_compatibility: f32 = mst_graph.edge_weights().map(|w| -w).sum();
         
         // Analyze synergies and conflicts
         let mut synergies = Vec::new();
