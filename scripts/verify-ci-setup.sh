@@ -11,6 +11,9 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# Configuration
+LOG_LINES=20  # Number of error lines to display
+
 echo "=== Vintage Game Generator CI Setup Verification ==="
 echo ""
 
@@ -35,14 +38,20 @@ else
     exit 1
 fi
 
-# Check 3: System dependencies (if running locally)
+# Check 3: System dependencies (if running locally on Linux)
 if [ "$(uname)" = "Linux" ]; then
     echo -n "Checking for ALSA development libraries... "
-    if dpkg -l | grep -q libasound2-dev; then
-        echo -e "${GREEN}✓${NC} Installed"
+    if command -v dpkg > /dev/null && dpkg -l | grep -q libasound2-dev; then
+        echo -e "${GREEN}✓${NC} Installed (Debian/Ubuntu)"
+    elif command -v rpm > /dev/null && rpm -q alsa-lib-devel > /dev/null 2>&1; then
+        echo -e "${GREEN}✓${NC} Installed (RHEL/Fedora)"
+    elif command -v pacman > /dev/null && pacman -Q alsa-lib > /dev/null 2>&1; then
+        echo -e "${GREEN}✓${NC} Installed (Arch Linux)"
     else
-        echo -e "${YELLOW}⚠${NC} Not installed (OK in CI, needed for local builds)"
-        echo -e "  To install: ${YELLOW}sudo apt-get install -y libasound2-dev libudev-dev${NC}"
+        echo -e "${YELLOW}⚠${NC} Not detected (OK in CI, needed for local builds)"
+        echo -e "  Debian/Ubuntu: ${YELLOW}sudo apt-get install -y libasound2-dev libudev-dev${NC}"
+        echo -e "  RHEL/Fedora: ${YELLOW}sudo dnf install alsa-lib-devel systemd-devel${NC}"
+        echo -e "  Arch Linux: ${YELLOW}sudo pacman -S alsa-lib systemd${NC}"
     fi
 fi
 
@@ -64,8 +73,8 @@ if cargo check --all-targets --all-features > "$CARGO_LOG" 2>&1; then
     rm -f "$CARGO_LOG"
 else
     echo -e "${RED}✗${NC} Build failed"
-    echo -e "${YELLOW}Review errors:${NC}"
-    tail -20 "$CARGO_LOG"
+    echo -e "${YELLOW}Last ${LOG_LINES} lines of output:${NC}"
+    tail -"$LOG_LINES" "$CARGO_LOG"
     rm -f "$CARGO_LOG"
     exit 1
 fi
@@ -78,8 +87,8 @@ if cargo clippy --all-targets --all-features -- -D warnings > "$CLIPPY_LOG" 2>&1
     rm -f "$CLIPPY_LOG"
 else
     echo -e "${RED}✗${NC} Clippy warnings/errors found"
-    echo -e "${YELLOW}Review output:${NC}"
-    tail -20 "$CLIPPY_LOG"
+    echo -e "${YELLOW}Last ${LOG_LINES} lines of output:${NC}"
+    tail -"$LOG_LINES" "$CLIPPY_LOG"
     rm -f "$CLIPPY_LOG"
     exit 1
 fi
