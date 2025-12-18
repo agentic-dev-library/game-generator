@@ -3,18 +3,21 @@ members = ["vintage_ai_client"]
 resolver = "2"
 
 [workspace.package]
+version = "0.1.0"
 authors = ["Jon Bogaty <jon@jonbogaty.com>"]
-edition = "2021"
+edition = "2024"
+rust-version = "1.85"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/jbcom/rust-vintage-game-generator"
+homepage = "https://github.com/jbcom/rust-vintage-game-generator"
 
 [workspace.dependencies]
-# AI providers
-async-openai = "0.21"
-anthropic = { version = "0.1", optional = true }
+# AI providers - latest versions
+async-openai = "0.28"
 
 # Async runtime
 tokio = { version = "1", features = ["full"] }
+async-trait = "0.1"
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
@@ -28,10 +31,14 @@ sled = "0.34"
 
 # Error handling
 anyhow = "1.0"
-thiserror = "1.0"
+thiserror = "2.0"
 
-# Async traits
-async-trait = "0.1"
+# HTTP client
+reqwest = { version = "0.12", features = ["json"] }
 
-# Bevy integration (optional)
-bevy = { version = "0.16", default-features = false, optional = true }
+# UUID
+uuid = { version = "1", features = ["v4"] }
+
+# Bevy integration (for UI in generator app)
+bevy = { version = "0.17", default-features = false }
+bevy_egui = "0.34"
