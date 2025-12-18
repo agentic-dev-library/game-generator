@@ -25,7 +25,8 @@ pub struct GameGraph {
 impl GameGraph {
     /// Create a new graph from metadata
     pub fn new(metadata: HashMap<String, GameMetadata>) -> Result<Self> {
-        let mut graph = Graph::new();
+        // Use undirected graph since game compatibility is symmetric
+        let mut graph = Graph::new_undirected();
         let mut node_lookup = HashMap::new();
         
         // Add nodes
@@ -67,8 +68,8 @@ impl GameGraph {
             anyhow::bail!("Need at least 2 games to blend");
         }
         
-        // Create a subgraph with just the selected games
-        let mut subgraph = Graph::new();
+        // Create a subgraph with just the selected games (undirected for symmetric compatibility)
+        let mut subgraph = Graph::new_undirected();
         let mut sub_lookup = HashMap::new();
         
         // Add nodes
@@ -169,13 +170,15 @@ impl GameGraph {
         // Complexity conflict
         let complexity_diff = (meta1.feature_vector.complexity - meta2.feature_vector.complexity).abs();
         if complexity_diff > 0.5 {
+            // Always describe the more complex game first
+            let (more_complex, less_complex) = if meta1.feature_vector.complexity > meta2.feature_vector.complexity {
+                (meta1.name.clone(), meta2.name.clone())
+            } else {
+                (meta2.name.clone(), meta1.name.clone())
+            };
             conflicts.push(Conflict {
                 type_name: "Complexity Mismatch".to_string(),
-                description: format!("{} is much {} complex than {}", 
-                    if meta1.feature_vector.complexity > meta2.feature_vector.complexity { meta1.name.clone() } else { meta2.name.clone() },
-                    if meta1.feature_vector.complexity > meta2.feature_vector.complexity { "more" } else { "less" },
-                    if meta1.feature_vector.complexity > meta2.feature_vector.complexity { meta2.name.clone() } else { meta1.name.clone() }
-                ),
+                description: format!("{} is much more complex than {}", more_complex, less_complex),
                 severity: complexity_diff,
                 resolution_hint: "Consider adjusting difficulty curves or adding tutorial layers".to_string(),
             });
