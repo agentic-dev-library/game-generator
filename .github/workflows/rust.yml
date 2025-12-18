@@ -70,4 +70,5 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
       - uses: Swatinem/rust-cache@v2
-      - run: cargo check --target wasm32-unknown-unknown --all-features
+      # Only check WASM-compatible crates (vintage_ai_client uses tokio which isn't WASM-compatible)
+      - run: cargo check --target wasm32-unknown-unknown -p vintage_blending_core

@@ -1,5 +1,5 @@
 //! Similarity engine for game comparisons
-//! 
+//!
 //! Provides various similarity metrics and algorithms
 
 use crate::types::GameMetadata;
@@ -25,21 +25,22 @@ impl SimilarityEngine {
             complexity_weight: 0.2,
         }
     }
-    
+
     /// Compute similarity between two games
     pub fn compute_similarity(&self, game1: &GameMetadata, game2: &GameMetadata) -> f32 {
         let vector_sim = game1.feature_vector.similarity(&game2.feature_vector);
         let era_sim = self.compute_era_similarity(game1, game2);
-        
+
         // Weighted combination
-        let weighted_sim = 
-            vector_sim * (self.genre_weight + self.mechanic_weight + self.complexity_weight) +
-            era_sim * self.era_weight;
-            
+        let weighted_sim = vector_sim
+            * (self.genre_weight + self.mechanic_weight + self.complexity_weight)
+            + era_sim * self.era_weight;
+
         // Normalize
-        weighted_sim / (self.genre_weight + self.mechanic_weight + self.era_weight + self.complexity_weight)
+        weighted_sim
+            / (self.genre_weight + self.mechanic_weight + self.era_weight + self.complexity_weight)
     }
-    
+
     /// Compute era similarity
     fn compute_era_similarity(&self, game1: &GameMetadata, game2: &GameMetadata) -> f32 {
         if game1.era_category == game2.era_category {
@@ -55,7 +56,7 @@ impl SimilarityEngine {
             }
         }
     }
-    
+
     /// Find games most similar to a target
     pub fn find_similar_games(
         &self,
@@ -71,7 +72,7 @@ impl SimilarityEngine {
                 (game.game_id.clone(), sim)
             })
             .collect();
-            
+
         similarities.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
         similarities.truncate(limit);
         similarities
@@ -87,12 +88,13 @@ impl Default for SimilarityEngine {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::FeatureVector;
     use std::collections::HashMap;
-    
+
     #[test]
     fn test_similarity_engine() {
         let engine = SimilarityEngine::new();
-        
+
         let game1 = GameMetadata {
             game_id: "game1".to_string(),
             name: "Test Game 1".to_string(),
@@ -104,13 +106,15 @@ mod tests {
                 complexity: 0.5,
                 action_strategy_balance: -0.5,
                 single_multi_balance: -0.8,
+                semantic_embedding: None,
             },
             common_pairings: HashMap::new(),
             genre_affinities: HashMap::new(),
             mechanic_tags: vec!["Combat".to_string()],
             era_category: "mid_80s".to_string(),
+            mood_tags: Vec::new(),
         };
-        
+
         let game2 = GameMetadata {
             game_id: "game2".to_string(),
             name: "Test Game 2".to_string(),
@@ -122,13 +126,15 @@ mod tests {
                 complexity: 0.6,
                 action_strategy_balance: -0.4,
                 single_multi_balance: -0.7,
+                semantic_embedding: None,
             },
             common_pairings: HashMap::new(),
             genre_affinities: HashMap::new(),
             mechanic_tags: vec!["Combat".to_string()],
             era_category: "mid_80s".to_string(),
+            mood_tags: Vec::new(),
         };
-        
+
         let similarity = engine.compute_similarity(&game1, &game2);
         assert!(similarity > 0.5); // Should be quite similar
         assert!(similarity < 1.0); // But not identical

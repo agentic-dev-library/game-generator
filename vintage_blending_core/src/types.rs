@@ -1,5 +1,5 @@
 //! Core types for game blending
-//! 
+//!
 //! These types are used both at build time and runtime
 
 use serde::{Deserialize, Serialize};
@@ -29,92 +29,98 @@ impl FeatureVector {
     pub fn new() -> Self {
         Self::default()
     }
-    
+
     /// Calculate cosine similarity between two vectors
     pub fn similarity(&self, other: &Self) -> f32 {
         // If both have semantic embeddings, use those for higher quality similarity
-        if let (Some(embed_a), Some(embed_b)) = (&self.semantic_embedding, &other.semantic_embedding) {
+        if let (Some(embed_a), Some(embed_b)) =
+            (&self.semantic_embedding, &other.semantic_embedding)
+        {
             let semantic_sim = self.cosine_similarity(embed_a, embed_b);
             // Mix semantic similarity with traditional features
             let genre_sim = self.genre_similarity(&other.genre_weights);
             let mech_sim = self.mechanic_similarity(&other.mechanic_flags);
-            
+
             // Weight semantic similarity heavily when available
             semantic_sim * 0.6 + genre_sim * 0.2 + mech_sim * 0.2
         } else {
             // Fallback to traditional similarity calculation
             let genre_sim = self.genre_similarity(&other.genre_weights);
             let mech_sim = self.mechanic_similarity(&other.mechanic_flags);
-            let gen_sim = 1.0 - (self.platform_generation.abs_diff(other.platform_generation) as f32 / 5.0);
+            let gen_sim =
+                1.0 - (self.platform_generation.abs_diff(other.platform_generation) as f32 / 5.0);
             let complex_sim = 1.0 - (self.complexity - other.complexity).abs();
-            let action_sim = 1.0 - (self.action_strategy_balance - other.action_strategy_balance).abs() / 2.0;
-            let multi_sim = 1.0 - (self.single_multi_balance - other.single_multi_balance).abs() / 2.0;
-            
+            let action_sim =
+                1.0 - (self.action_strategy_balance - other.action_strategy_balance).abs() / 2.0;
+            let multi_sim =
+                1.0 - (self.single_multi_balance - other.single_multi_balance).abs() / 2.0;
+
             // Weighted average
-            genre_sim * 0.3 + mech_sim * 0.3 + gen_sim * 0.1 + 
-             complex_sim * 0.1 + action_sim * 0.1 + multi_sim * 0.1
+            genre_sim * 0.3
+                + mech_sim * 0.3
+                + gen_sim * 0.1
+                + complex_sim * 0.1
+                + action_sim * 0.1
+                + multi_sim * 0.1
         }
     }
-    
+
     fn genre_similarity(&self, other: &[f32]) -> f32 {
         if self.genre_weights.is_empty() || other.is_empty() {
             return 0.5;
         }
-        
-        let len = self.genre_weights.len().min(other.len());
+
         let mut dot_product = 0.0;
         let mut magnitude_a = 0.0;
         let mut magnitude_b = 0.0;
-        
-        for i in 0..len {
-            dot_product += self.genre_weights[i] * other[i];
-            magnitude_a += self.genre_weights[i] * self.genre_weights[i];
-            magnitude_b += other[i] * other[i];
+
+        for (a, b) in self.genre_weights.iter().zip(other.iter()) {
+            dot_product += a * b;
+            magnitude_a += a * a;
+            magnitude_b += b * b;
         }
-        
+
         if magnitude_a == 0.0 || magnitude_b == 0.0 {
             return 0.0;
         }
-        
+
         dot_product / (magnitude_a.sqrt() * magnitude_b.sqrt())
     }
-    
+
     fn mechanic_similarity(&self, other: &[bool]) -> f32 {
         if self.mechanic_flags.is_empty() || other.is_empty() {
             return 0.5;
         }
-        
-        let len = self.mechanic_flags.len().min(other.len());
-        let mut matches = 0;
-        
-        for i in 0..len {
-            if self.mechanic_flags[i] == other[i] {
-                matches += 1;
-            }
-        }
-        
-        matches as f32 / len as f32
+
+        let matches = self
+            .mechanic_flags
+            .iter()
+            .zip(other.iter())
+            .filter(|(a, b)| a == b)
+            .count();
+
+        matches as f32 / self.mechanic_flags.len().min(other.len()) as f32
     }
-    
+
     fn cosine_similarity(&self, a: &[f32], b: &[f32]) -> f32 {
         if a.is_empty() || b.is_empty() || a.len() != b.len() {
             return 0.0;
         }
-        
+
         let mut dot_product = 0.0;
         let mut magnitude_a = 0.0;
         let mut magnitude_b = 0.0;
-        
+
         for i in 0..a.len() {
             dot_product += a[i] * b[i];
             magnitude_a += a[i] * a[i];
             magnitude_b += b[i] * b[i];
         }
-        
+
         if magnitude_a == 0.0 || magnitude_b == 0.0 {
             return 0.0;
         }
-        
+
         dot_product / (magnitude_a.sqrt() * magnitude_b.sqrt())
     }
 }
@@ -184,7 +190,7 @@ pub struct ResolutionAction {
 /// Standard genre list for consistent indexing
 pub const STANDARD_GENRES: &[&str] = &[
     "Action",
-    "Adventure", 
+    "Adventure",
     "RPG",
     "Strategy",
     "Puzzle",
