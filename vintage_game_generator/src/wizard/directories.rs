@@ -36,11 +36,12 @@ impl AppDirectories {
             "01_design",
             "02_style",
             "03_world",
-            "04_assets",
-            "05_code",
-            "06_dialog",
-            "07_music",
-            "08_integration",
+            "04_ai_systems",
+            "05_assets",
+            "06_code",
+            "07_dialog",
+            "08_music",
+            "09_integration",
             "generated", // For AI-generated prompts
             "validated", // For validated prompts
         ];

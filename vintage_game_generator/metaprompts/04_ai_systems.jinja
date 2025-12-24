@@ -1,0 +1,42 @@
+{# AI Systems Generation #}
+Generate AI systems for {{ config.name }} using the `bevy_ai_toolkit`.
+
+The `bevy_ai_toolkit` provides the following components:
+- `StateMachine<S>`: For managing entity states (Idle, Chasing, Attacking, etc.)
+- `BehaviorTree`: For complex decision making using Selector and Sequence nodes
+- `UtilityAi`: For scoring multiple considerations and selecting the best action
+- `Targeting`: `Vision` and `Target` components for simple line-of-sight and proximity targeting
+
+Requirements:
+- Use `bevy_ai_toolkit::prelude::*`
+- Define state enums for your NPCs
+- Implement specific `BehaviorNode`, `Scorer`, or `Action` traits if needed
+- Integrate with the combat system if applicable
+
+Example usage of `StateMachine`:
+```rust
+#[derive(Component, Clone, Copy, Debug, PartialEq, Eq)]
+enum MobState {
+    Patrolling,
+    Alert,
+    Engaging,
+}
+
+// ... transition logic in a system
+```
+
+Example usage of `Targeting`:
+```rust
+commands.spawn((
+    Vision { range: 15.0, field_of_view: 90.0 },
+    Target::default(),
+    // ... other components
+));
+```
+
+Generate a `npc_ai.rs` file that implements AI for the following NPC types:
+{% for npc in config.world.npcs %}
+- {{ npc.name }}: {{ npc.behavior_description }}
+{% endfor %}
+
+Ensure the AI feels consistent with the vintage era (e.g., predictable but challenging patterns).

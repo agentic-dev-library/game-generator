@@ -67,6 +67,7 @@ pub enum GenerationPhase {
     Design,
     StyleGuide,
     WorldGeneration,
+    AiSystems,
     AssetGeneration,
     CodeGeneration,
     DialogWriting,
