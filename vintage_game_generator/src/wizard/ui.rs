@@ -249,8 +249,17 @@ fn prompts_tab(ui: &mut egui::Ui, app_state: &mut AppState, directories: &AppDir
 
         // Browse prompts by phase
         ui.collapsing("Browse Prompts", |ui| {
-            let phases = ["01_design", "02_style", "03_world", "04_assets",
-                         "05_code", "06_dialog", "07_music", "08_integration"];
+            let phases = [
+                "01_design",
+                "02_style",
+                "03_world",
+                "04_ai_systems",
+                "05_assets",
+                "06_code",
+                "07_dialog",
+                "08_music",
+                "09_integration",
+            ];
 
             for phase in phases {
                 ui.collapsing(phase, |ui| {

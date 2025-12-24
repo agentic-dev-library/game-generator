@@ -50,7 +50,7 @@ impl GameGenerationExt for ConversationManager {
 
         // Load system prompt from template if available
         if let Some(env) = self.template_env.lock().await.as_ref()
-            && let Ok(template) = env.get_template("01_game_design_system")
+            && let Ok(template) = env.get_template("01_design")
         {
             let system_prompt = if let Some(config) = &project_config {
                 template.render(context!(project => config))?
@@ -168,7 +168,30 @@ impl GameGenerationExt for ConversationManager {
         .await?;
         save_world_data(&project_path, &world_data)?;
 
-        // Phase 3: Generate Assets
+        // Phase 3: Generate AI Systems
+        progress_callback(GenerationProgress {
+            phase: GenerationPhase::AiSystems,
+            step: "Designing AI behaviors".to_string(),
+            progress: 0.3,
+            message: "Creating NPC state machines and behavior trees...".to_string(),
+        });
+
+        // Generate AI systems
+        if let Some(env) = self.template_env.lock().await.as_ref()
+            && let Ok(template) = env.get_template("04_ai_systems")
+        {
+            let prompt = if let Some(config) = &project_config {
+                template.render(context!(config => config))?
+            } else {
+                template.render(context!())?
+            };
+            
+            let ai_systems = self.generate_response(&prompt).await?;
+            let ai_systems_path = project_path.join("src").join("npc_ai.rs");
+            std::fs::write(&ai_systems_path, ai_systems)?;
+        }
+        
+        // Phase 4: Generate Assets
         progress_callback(GenerationProgress {
             phase: GenerationPhase::AssetGeneration,
             step: "Creating game assets".to_string(),
@@ -226,13 +249,49 @@ impl GameGenerationExt for ConversationManager {
             message: "Creating final build...".to_string(),
         });
 
-        // TODO: Implement packaging
+        // Copy AI toolkit if needed
+        copy_ai_toolkit(&project_path)?;
 
         Ok(project_path.to_string_lossy().to_string())
     }
 }
 
 // Helper functions
+
+fn copy_ai_toolkit(project_path: &Path) -> Result<()> {
+    // Try different possible locations for the template
+    let possible_paths = [
+        PathBuf::from("vintage_game_generator/templates/bevy-ai-toolkit"),
+        PathBuf::from("templates/bevy-ai-toolkit"),
+        PathBuf::from("../templates/bevy-ai-toolkit"),
+    ];
+
+    let toolkit_src = possible_paths.iter().find(|p| p.exists());
+
+    if let Some(src) = toolkit_src {
+        let toolkit_dest = project_path.join("crates/bevy-ai-toolkit");
+        std::fs::create_dir_all(&toolkit_dest)?;
+        copy_dir_recursive(src, &toolkit_dest)?;
+    }
+
+    Ok(())
+}
+
+fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<()> {
+    for entry in std::fs::read_dir(src)? {
+        let entry = entry?;
+        let path = entry.path();
+        let dest_path = dst.join(entry.file_name());
+
+        if path.is_dir() {
+            std::fs::create_dir_all(&dest_path)?;
+            copy_dir_recursive(&path, &dest_path)?;
+        } else {
+            std::fs::copy(&path, &dest_path)?;
+        }
+    }
+    Ok(())
+}
 
 fn create_project_directory(project_name: &str) -> Result<PathBuf> {
     let sanitized_name = project_name
@@ -259,7 +318,7 @@ async fn generate_style_guide(
     project_config: Option<&serde_json::Value>,
 ) -> Result<String> {
     if let Some(env) = manager.template_env.lock().await.as_ref()
-        && let Ok(template) = env.get_template("05_style_guide")
+        && let Ok(template) = env.get_template("02_style")
     {
         let prompt = if let Some(project) = project_config {
             template.render(context!(
@@ -296,7 +355,7 @@ async fn generate_world(
     project_config: Option<&serde_json::Value>,
 ) -> Result<WorldData> {
     if let Some(env) = manager.template_env.lock().await.as_ref()
-        && let Ok(template) = env.get_template("06_world_generation")
+        && let Ok(template) = env.get_template("03_world")
     {
         let prompt = if let Some(project) = project_config {
             template.render(context!(

@@ -317,9 +317,9 @@ fn test_png_assets_exist() {
 #[test]
 fn test_metaprompt_templates() {
     let templates = vec![
-        "crates/vintage_game_generator/metaprompts/01_game_design_system.jinja",
-        "crates/vintage_game_generator/metaprompts/05_style_guide.jinja",
-        "crates/vintage_game_generator/metaprompts/06_world_generation.jinja",
+        "crates/vintage_game_generator/metaprompts/01_design.jinja",
+        "crates/vintage_game_generator/metaprompts/02_style.jinja",
+        "crates/vintage_game_generator/metaprompts/03_world.jinja",
         "crates/vintage_game_generator/metaprompts/blend_game_design.jinja",
         "crates/vintage_game_generator/metaprompts/code_combat.jinja",
     ];
