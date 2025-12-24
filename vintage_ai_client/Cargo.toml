@@ -54,7 +54,9 @@ regex.workspace = true
 
 # Optional Bevy integration
 bevy = { workspace = true, optional = true }
+llm = { version = "1.3.6", optional = true, features = ["elevenlabs"] }
 
 [features]
 default = []
 bevy = ["dep:bevy"]
+voice = ["dep:llm"]

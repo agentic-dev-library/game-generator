@@ -27,6 +27,7 @@ pub enum GenerationPhase {
     AssetGeneration,
     CodeGeneration,
     DialogWriting,
+    VoiceSynthesis,
     MusicComposition,
     Integration,
     Testing,
@@ -203,9 +204,38 @@ impl GameGenerator {
             "Write sample dialogue for key characters in: {}",
             config.name
         );
-        let _dialogue = text_generator
+        let dialogue = text_generator
             .generate(&dialogue_prompt, dialogue_config)
             .await?;
+
+        // Voice synthesis (New)
+        if let Some(project_config) = &self.project_config {
+            if let Some(dialogue_config) = &project_config.features.dialogue_system {
+                if dialogue_config.use_voice {
+                    progress_callback(GenerationProgress {
+                        phase: GenerationPhase::VoiceSynthesis,
+                        progress: 0.6,
+                        message: "Synthesizing character voices...".to_string(),
+                    });
+
+                    let voice_generator = self.ai_service.voice();
+                    let voice_config = vintage_ai_client::voice::VoiceConfig {
+                        voice_id: dialogue_config.voice_id.clone().unwrap_or_else(|| "21m00Tcm4TlvDq8ikWAM".to_string()),
+                        ..Default::default()
+                    };
+
+                    // Extract some dialogue lines to synthesize (just a few for now)
+                    let dialogue_lines: Vec<&str> = dialogue.lines().filter(|l| !l.trim().is_empty()).take(5).collect();
+                    for (i, line) in dialogue_lines.iter().enumerate() {
+                        let filename = format!("voice_dialogue_{}.mp3", i);
+                        let output_path = std::path::Path::new("assets/audio/voice").join(filename);
+                        
+                        // We use the saving helper
+                        let _ = voice_generator.save_voice_to_file(line, &voice_config, &output_path).await;
+                    }
+                }
+            }
+        }
 
         // Composing music descriptions
         progress_callback(GenerationProgress {

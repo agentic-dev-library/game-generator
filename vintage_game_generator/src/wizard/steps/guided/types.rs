@@ -14,6 +14,8 @@ pub struct GuidedModeState {
     pub search_query: String,
     pub genre_filter: Option<String>,
     pub current_step: u32,
+    pub selected_voice: Option<String>,
+    pub use_voice: bool,
 }
 
 impl GuidedModeState {
@@ -149,6 +151,8 @@ pub struct GuidedModeExport {
     pub complexity: f32,
     pub action_strategy_balance: f32,
     pub recommended_features: Vec<String>,
+    pub voice_id: Option<String>,
+    pub use_voice: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

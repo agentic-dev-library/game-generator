@@ -174,6 +174,10 @@ pub struct DialogueConfig {
     pub text_speed: String,
     pub branching_depth: u32,
     pub personality_system: bool, // AI can design this
+    #[serde(default)]
+    pub voice_id: Option<String>,
+    #[serde(default)]
+    pub use_voice: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

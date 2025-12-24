@@ -17,6 +17,7 @@ use super::{
     conversation::{ConversationContext, ConversationManager},
     image::{ImageConfig, ImageGenerator},
     text::{TextConfig, TextGenerator},
+    voice::{VoiceConfig, VoiceGenerator},
 };
 
 /// The unified AI client - your one-stop shop for all AI services
@@ -48,6 +49,7 @@ pub enum AiRequestType {
     Text { purpose: String },
     Image { purpose: String },
     Audio { purpose: String },
+    Voice { voice_id: String },
     Conversation { context: String },
 }
 
@@ -91,6 +93,11 @@ pub enum AiTask {
         prompt: String,
         config: Option<ImageConfig>,
     },
+    /// Generate voice synthesis for dialogue
+    GenerateVoice {
+        text: String,
+        config: Option<VoiceConfig>,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -107,6 +114,7 @@ pub enum AiResult {
     Text(String),
     Image(Vec<u8>),
     Audio(Vec<u8>),
+    Voice(Vec<u8>),
     Conversation {
         response: String,
         context_updated: bool,
@@ -373,6 +381,33 @@ impl AiClient {
                     cache_hit,
                 )
             }
+
+            AiTask::GenerateVoice { text, config } => {
+                let current_config = self.config.read().await;
+                let voice_config = config.unwrap_or(VoiceConfig {
+                    voice_id: current_config.voice_id.clone(),
+                    model: current_config.voice_model.clone(),
+                    ..Default::default()
+                });
+                let voice_gen = self.service.voice();
+
+                let cache_key = format!("voice_{}_{}", voice_config.voice_id, &text[..text.len().min(50)]);
+                let cache_hit = voice_gen.is_cached(&cache_key).await;
+
+                let result = voice_gen.generate_voice(&text, &voice_config).await?;
+                let tokens = voice_gen.estimate_tokens(&text).await?;
+                let cost = voice_gen.estimate_cost(&text).await?;
+
+                (
+                    AiResult::Voice(result),
+                    AiRequestType::Voice {
+                        voice_id: voice_config.voice_id,
+                    },
+                    tokens,
+                    cost,
+                    cache_hit,
+                )
+            }
         };
 
         // Record the request
@@ -409,6 +444,11 @@ impl AiClient {
     /// Get direct access to conversation manager for advanced use
     pub fn conversation(&self) -> ConversationManager {
         self.service.conversation()
+    }
+
+    /// Get direct access to voice generator for advanced use
+    pub fn voice(&self) -> VoiceGenerator {
+        self.service.voice()
     }
 
     /// Update configuration
