@@ -176,7 +176,20 @@ impl GameGenerationExt for ConversationManager {
             message: "Creating NPC state machines and behavior trees...".to_string(),
         });
 
-        // TODO: Implement AI systems generation
+        // Generate AI systems
+        if let Some(env) = self.template_env.lock().await.as_ref()
+            && let Ok(template) = env.get_template("04_ai_systems")
+        {
+            let prompt = if let Some(config) = &project_config {
+                template.render(context!(config => config))?
+            } else {
+                template.render(context!())?
+            };
+            
+            let ai_systems = self.generate_response(&prompt).await?;
+            let ai_systems_path = project_path.join("src").join("npc_ai.rs");
+            std::fs::write(&ai_systems_path, ai_systems)?;
+        }
         
         // Phase 4: Generate Assets
         progress_callback(GenerationProgress {
