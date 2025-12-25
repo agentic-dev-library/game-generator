@@ -4,14 +4,13 @@
 //! describe their game ideas and the AI helps design and generate the game.
 
 use bevy::prelude::*;
-use bevy_egui::{egui, EguiContexts};
+use bevy_egui::EguiContexts;
 use crate::wizard::pipeline::GenerationPipeline;
-use crate::wizard::state::{AppState, WizardStep};
+use crate::wizard::state::AppState;
 
 mod types;
 mod conversation;
 mod wizard_steps;
-mod ai_interface;
 
 pub use types::*;
 pub use conversation::*;
@@ -62,7 +61,7 @@ pub fn setup_freeform_mode(mut commands: Commands) {
     commands.insert_resource(ConversationStream::default());
 
     // Initialize AI client if needed
-    if let Ok(api_key) = std::env::var("OPENAI_API_KEY") {
+    if std::env::var("OPENAI_API_KEY").is_ok() {
         // Initialize AI resources
         info!("OpenAI API key found, AI conversation will be available");
     } else {

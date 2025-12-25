@@ -417,7 +417,7 @@ impl AiClient {
         &self,
         conversation_id: &str,
         message: String,
-    ) -> Result<impl Stream<Item = Result<String>>> {
+    ) -> Result<impl Stream<Item = Result<String>> + use<>> {
         self.service
             .conversation()
             .send_message_stream(conversation_id, message)

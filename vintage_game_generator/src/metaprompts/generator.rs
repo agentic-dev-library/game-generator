@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 use crate::wizard::config::ProjectConfig;
-use futures::{Stream, StreamExt};
+use futures::Stream;
 
 // Import from vintage_ai_client - updated to new API
 use vintage_ai_client::{
@@ -149,7 +149,7 @@ impl GameGenerator {
         &self,
         conversation_id: &str,
         user_input: &str,
-    ) -> anyhow::Result<impl Stream<Item = anyhow::Result<String>>> {
+    ) -> anyhow::Result<impl Stream<Item = anyhow::Result<String>> + use<>> {
         let conversation_manager = self.ai_service.conversation();
         conversation_manager
             .send_message_stream(conversation_id, user_input.to_string())
@@ -325,13 +325,15 @@ impl GameGenerator {
         if response.contains("\"title\"") && response.contains("\"genre\"") {
             // Try to extract and parse JSON - use safe string slicing
             if let Some(start) = response.find('{')
-                && let Some(end) = response.rfind('}') {
-                    // Use get() for safe UTF-8 string slicing to avoid panics
-                    if let Some(json_str) = response.get(start..=end)
-                        && let Ok(config) = serde_json::from_str::<GameConfig>(json_str) {
-                            return (true, Some(config));
-                        }
+                && let Some(end) = response.rfind('}')
+            {
+                // Use get() for safe UTF-8 string slicing to avoid panics
+                if let Some(json_str) = response.get(start..=end)
+                    && let Ok(config) = serde_json::from_str::<GameConfig>(json_str)
+                {
+                    return (true, Some(config));
                 }
+            }
         }
         (false, None)
     }
