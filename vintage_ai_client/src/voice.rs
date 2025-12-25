@@ -4,25 +4,30 @@
 
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "voice")]
 use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use super::cache::{AiCache, CachedData};
+use super::cache::AiCache;
+#[cfg(feature = "voice")]
+use super::cache::CachedData;
 use super::tokens::TokenCounter;
 
 #[cfg(feature = "voice")]
-use sha2::{Digest, Sha256};
+use sha2::Digest;
 
 #[cfg(feature = "voice")]
-use llm::tts::{TtsProvider, Voice, ElevenLabsConfig};
+use llm::tts::{TtsProvider, ElevenLabsConfig};
 
 /// Voice generator for game dialogue and narration
 #[derive(Clone)]
 pub struct VoiceGenerator {
     cache: Arc<Mutex<AiCache>>,
+    #[cfg(feature = "voice")]
     token_counter: Arc<Mutex<TokenCounter>>,
+    #[cfg(feature = "voice")]
     api_key: String,
 }
 
@@ -69,12 +74,15 @@ impl VoiceGenerator {
     /// Create a new voice generator
     pub fn new(
         cache: Arc<Mutex<AiCache>>,
-        token_counter: Arc<Mutex<TokenCounter>>,
+        _token_counter: Arc<Mutex<TokenCounter>>,
     ) -> Self {
+        #[cfg(feature = "voice")]
         let api_key = std::env::var("ELEVENLABS_API_KEY").unwrap_or_default();
         Self {
             cache,
-            token_counter,
+            #[cfg(feature = "voice")]
+            token_counter: _token_counter,
+            #[cfg(feature = "voice")]
             api_key,
         }
     }
@@ -87,6 +95,8 @@ impl VoiceGenerator {
     ) -> Result<Vec<u8>> {
         #[cfg(not(feature = "voice"))]
         {
+            let _ = text;
+            let _ = config;
             anyhow::bail!("Voice feature is not enabled. Enable 'voice' feature to use ElevenLabs.")
         }
 
