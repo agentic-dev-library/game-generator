@@ -67,12 +67,13 @@ pub fn update_effects(
 }
 
 /// Example system for handling Madness effect
-pub fn handle_madness(
-    mut query: Query<(&EffectRegistry, &mut Transform)>,
-    time: Res<Time>,
-) {
+pub fn handle_madness(mut query: Query<(&EffectRegistry, &mut Transform)>, time: Res<Time>) {
     for (registry, mut transform) in query.iter_mut() {
-        if let Some(madness) = registry.effects.iter().find(|e| e.effect_type == EffectType::Madness) {
+        if let Some(madness) = registry
+            .effects
+            .iter()
+            .find(|e| e.effect_type == EffectType::Madness)
+        {
             // Madness causes erratic movement
             let jitter = (time.elapsed_secs() * 10.0).sin() * madness.power * 0.1;
             transform.translation.x += jitter;

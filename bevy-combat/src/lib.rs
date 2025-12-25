@@ -20,21 +20,21 @@ impl Plugin for CombatPlugin {
             
             // Add states
             .init_state::<state::CombatState>()
-            
             // Add resources
             .init_resource::<damage::DamageConfig>()
             .init_resource::<state::CombatManager>()
-            
             // Add events
             .add_event::<damage::DamageEvent>()
             .add_event::<progression::LevelUpEvent>()
-            
             // Add systems
-            .add_systems(Update, (
-                effects::update_effects,
-                effects::handle_madness,
-                state::manage_combat_state,
-            ));
+            .add_systems(
+                Update,
+                (
+                    effects::update_effects,
+                    effects::handle_madness,
+                    state::manage_combat_state,
+                ),
+            );
     }
 }
 

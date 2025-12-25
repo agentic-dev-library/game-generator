@@ -5,7 +5,7 @@
 
 use anyhow::Result;
 use futures::{Stream, StreamExt};
-use minijinja::{context, Environment};
+use minijinja::{Environment, context};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::Path;
