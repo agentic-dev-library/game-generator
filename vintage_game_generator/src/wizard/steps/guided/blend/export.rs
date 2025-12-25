@@ -38,6 +38,8 @@ pub fn export_blend_to_config(
         complexity: blend.complexity_score,
         action_strategy_balance: blend.action_strategy_balance,
         recommended_features: blend.recommended_features.clone(),
+        voice_id: state.selected_voice.clone(),
+        use_voice: state.use_voice,
     })
 }
 
@@ -242,8 +244,8 @@ pub fn generate_ai_prompt(
 }
 
 /// Export UI for showing export options
-pub fn render_export_ui(ui: &mut egui::Ui, state: &crate::wizard::steps::guided::GuidedModeState) {
-    ui.heading("📤 Export Options");
+pub fn render_export_ui(ui: &mut egui::Ui, state: &mut crate::wizard::steps::guided::GuidedModeState) {
+    ui.heading("📤 Export & Voice Options");
     ui.separator();
 
     if state.blend_result.is_none() {
@@ -251,20 +253,46 @@ pub fn render_export_ui(ui: &mut egui::Ui, state: &crate::wizard::steps::guided:
         return;
     }
 
+    // Voice selection section
+    ui.group(|ui| {
+        ui.label("🎙️ Voice Synthesis (ElevenLabs)");
+        ui.checkbox(&mut state.use_voice, "Enable voice acting for dialogue");
+        
+        if state.use_voice {
+            ui.horizontal(|ui| {
+                ui.label("Select Voice:");
+                egui::ComboBox::from_id_source("voice_select")
+                    .selected_text(state.selected_voice.as_deref().unwrap_or("Select a voice"))
+                    .show_ui(ui, |ui| {
+                        let voices = [
+                            ("Rachel", "21m00Tcm4TlvDq8ikWAM"),
+                            ("Nicole", "AZnzlk1Xhk6s7t6p32M5"),
+                            ("Bella", "EXAVITQu4vr4xn7AYnmo"),
+                            ("Antoni", "ErXw9S1Qo94Be92SreS9"),
+                            ("Josh", "TxGEqnSAs9auRW9pZOdR"),
+                        ];
+                        for (name, id) in voices {
+                            ui.selectable_value(&mut state.selected_voice, Some(id.to_string()), name);
+                        }
+                    });
+            });
+        }
+    });
+
+    ui.add_space(10.0);
+
     ui.horizontal(|ui| {
         if ui.button("📄 Copy TOML").clicked()
-            && let Some(toml) = export_to_toml(state)
-        {
-            // TODO: Copy to clipboard
-            ui.ctx().copy_text(toml);
-        }
+            && let Some(toml) = export_to_toml(state) {
+                // TODO: Copy to clipboard
+                ui.ctx().copy_text(toml);
+            }
 
         if ui.button("📋 Copy JSON").clicked()
-            && let Some(json) = export_to_json(state)
-        {
-            // TODO: Copy to clipboard
-            ui.ctx().copy_text(json.to_string());
-        }
+            && let Some(json) = export_to_json(state) {
+                // TODO: Copy to clipboard
+                ui.ctx().copy_text(json.to_string());
+            }
 
         if ui.button("🤖 Copy AI Prompt").clicked() {
             match generate_ai_prompt(state) {

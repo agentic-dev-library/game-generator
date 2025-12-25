@@ -4,7 +4,6 @@
 //! It manages all AI service instances and provides a clean, consistent interface.
 
 use anyhow::Result;
-use futures::{Stream, StreamExt};
 use minijinja::{Environment, context};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -18,6 +17,7 @@ use super::{
     conversation::{ConversationContext, ConversationManager},
     image::{ImageConfig, ImageGenerator},
     text::{TextConfig, TextGenerator},
+    voice::{VoiceConfig, VoiceGenerator},
 };
 
 /// The unified AI client - your one-stop shop for all AI services
@@ -49,7 +49,7 @@ pub enum AiRequestType {
     Text { purpose: String },
     Image { purpose: String },
     Audio { purpose: String },
-    Embedding { model: String },
+    Voice { voice_id: String },
     Conversation { context: String },
 }
 
@@ -93,10 +93,11 @@ pub enum AiTask {
         prompt: String,
         config: Option<ImageConfig>,
     },
-    /// Generate embedding for text
-    GenerateEmbedding { text: String },
-    /// Generate embeddings for multiple texts
-    GenerateEmbeddingBatch { texts: Vec<String> },
+    /// Generate voice synthesis for dialogue
+    GenerateVoice {
+        text: String,
+        config: Option<VoiceConfig>,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -113,8 +114,7 @@ pub enum AiResult {
     Text(String),
     Image(Vec<u8>),
     Audio(Vec<u8>),
-    Embedding(Vec<f32>),
-    Embeddings(Vec<Vec<f32>>),
+    Voice(Vec<u8>),
     Conversation {
         response: String,
         context_updated: bool,
@@ -206,8 +206,7 @@ impl AiClient {
                 subjects,
             } => {
                 let prompt = self.build_concept_art_prompt(&game_name, &art_style, &subjects);
-                let ai_config = self.config.read().await;
-                let config = ImageConfig::from_ai_config(&ai_config);
+                let config = ImageConfig::for_sprites(); // Use sprites config for concept art
                 let image_gen = self.service.image();
 
                 let cache_key = format!("concept_art_{}_{}", game_name, subjects.join("_"));
@@ -361,13 +360,7 @@ impl AiClient {
             }
 
             AiTask::CustomImage { prompt, config } => {
-                let config = match config {
-                    Some(c) => c,
-                    None => {
-                        let ai_config = self.config.read().await;
-                        ImageConfig::from_ai_config(&ai_config)
-                    }
-                };
+                let config = config.unwrap_or_default();
                 let image_gen = self.service.image();
 
                 let cache_key = format!("custom_image_{}", &prompt[..prompt.len().min(50)]);
@@ -389,49 +382,26 @@ impl AiClient {
                 )
             }
 
-            AiTask::GenerateEmbedding { text } => {
-                let config = self.config.read().await.clone();
-                let embed_gen = self.service.embeddings();
+            AiTask::GenerateVoice { text, config } => {
+                let current_config = self.config.read().await;
+                let voice_config = config.unwrap_or(VoiceConfig {
+                    voice_id: current_config.voice_id.clone(),
+                    model: current_config.voice_model.clone(),
+                    ..Default::default()
+                });
+                let voice_gen = self.service.voice();
 
-                let cache_key = format!("embedding:{}:{}", config.embedding_model, text);
-                let cache_hit = embed_gen.is_cached(&cache_key).await;
+                let cache_key = format!("voice_{}_{}", voice_config.voice_id, &text[..text.len().min(50)]);
+                let cache_hit = voice_gen.is_cached(&cache_key).await;
 
-                let result = embed_gen.generate(&text, &config).await?;
-                // Use default token count for now if estimate not easily available
-                let tokens = text.len() / 4; // Very rough estimate for embeddings
-                let cost = (tokens as f64 / 1000.0) * 0.00002; // Roughly text-embedding-3-small cost
-
-                (
-                    AiResult::Embedding(result),
-                    AiRequestType::Embedding {
-                        model: config.embedding_model.clone(),
-                    },
-                    tokens,
-                    cost,
-                    cache_hit,
-                )
-            }
-
-            AiTask::GenerateEmbeddingBatch { texts } => {
-                let config = self.config.read().await.clone();
-                let embed_gen = self.service.embeddings();
-
-                // Check cache for all (simplification: if all are cached)
-                // In practice, EmbeddingsGenerator handles individual caching
-                let cache_hit = false;
-
-                let result = embed_gen
-                    .generate_batch(texts.iter().map(|s| s.as_str()).collect(), &config)
-                    .await?;
-
-                let total_chars: usize = texts.iter().map(|t| t.len()).sum();
-                let tokens = total_chars / 4;
-                let cost = (tokens as f64 / 1000.0) * 0.00002;
+                let result = voice_gen.generate_voice(&text, &voice_config).await?;
+                let tokens = voice_gen.estimate_tokens(&text).await?;
+                let cost = voice_gen.estimate_cost(&text).await?;
 
                 (
-                    AiResult::Embeddings(result),
-                    AiRequestType::Embedding {
-                        model: config.embedding_model.clone(),
+                    AiResult::Voice(result),
+                    AiRequestType::Voice {
+                        voice_id: voice_config.voice_id,
                     },
                     tokens,
                     cost,
@@ -476,47 +446,9 @@ impl AiClient {
         self.service.conversation()
     }
 
-    /// Generate an embedding for a text string
-    pub async fn embed(&self, text: impl Into<String>) -> Result<Vec<f32>> {
-        match self
-            .execute(AiTask::GenerateEmbedding { text: text.into() })
-            .await?
-        {
-            AiResult::Embedding(vec) => Ok(vec),
-            _ => Err(anyhow::anyhow!(
-                "Unexpected result type from embedding task"
-            )),
-        }
-    }
-
-    /// Generate embeddings for multiple text strings
-    pub async fn embed_batch(&self, texts: Vec<String>) -> Result<Vec<Vec<f32>>> {
-        match self
-            .execute(AiTask::GenerateEmbeddingBatch { texts })
-            .await?
-        {
-            AiResult::Embeddings(vecs) => Ok(vecs),
-            _ => Err(anyhow::anyhow!(
-                "Unexpected result type from embedding batch task"
-            )),
-        }
-    }
-
-    /// Start a streaming chat response
-    pub async fn chat_stream(
-        &self,
-        conversation_id: &str,
-        message: String,
-    ) -> Result<impl Stream<Item = Result<String>>> {
-        let manager = self.service.conversation();
-        let conversation_id = conversation_id.to_string();
-        Ok(async_stream::try_stream! {
-            let stream = manager.send_message_stream(&conversation_id, message).await?;
-            futures::pin_mut!(stream);
-            while let Some(item) = stream.next().await {
-                yield item?;
-            }
-        })
+    /// Get direct access to voice generator for advanced use
+    pub fn voice(&self) -> VoiceGenerator {
+        self.service.voice()
     }
 
     /// Update configuration

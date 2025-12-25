@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 use crate::wizard::config::ProjectConfig;
-use futures::{Stream, StreamExt};
 
 // Import from vintage_ai_client - updated to new API
 use vintage_ai_client::{
@@ -25,10 +24,10 @@ pub enum GenerationPhase {
     DesigningCore,
     StyleGuide,
     WorldGeneration,
-    AiSystems,
     AssetGeneration,
     CodeGeneration,
     DialogWriting,
+    VoiceSynthesis,
     MusicComposition,
     Integration,
     Testing,
@@ -144,25 +143,6 @@ impl GameGenerator {
         Ok((response, is_complete, game_config))
     }
 
-    /// Continue game design conversation with streaming
-    pub async fn continue_game_design_conversation_stream(
-        &self,
-        conversation_id: &str,
-        user_input: &str,
-    ) -> anyhow::Result<impl Stream<Item = anyhow::Result<String>>> {
-        let manager = self.ai_service.conversation();
-        let conversation_id = conversation_id.to_string();
-        let user_input = user_input.to_string();
-
-        Ok(async_stream::try_stream! {
-            let stream = manager.send_message_stream(&conversation_id, user_input).await?;
-            futures::pin_mut!(stream);
-            while let Some(item) = stream.next().await {
-                yield item?;
-            }
-        })
-    }
-
     /// Generate full game with progress tracking
     pub async fn generate_full_game<F>(
         &self,
@@ -224,9 +204,38 @@ impl GameGenerator {
             "Write sample dialogue for key characters in: {}",
             config.name
         );
-        let _dialogue = text_generator
+        let dialogue = text_generator
             .generate(&dialogue_prompt, dialogue_config)
             .await?;
+
+        // Voice synthesis (New)
+        if let Some(project_config) = &self.project_config {
+            if let Some(dialogue_config) = &project_config.features.dialogue_system {
+                if dialogue_config.use_voice {
+                    progress_callback(GenerationProgress {
+                        phase: GenerationPhase::VoiceSynthesis,
+                        progress: 0.6,
+                        message: "Synthesizing character voices...".to_string(),
+                    });
+
+                    let voice_generator = self.ai_service.voice();
+                    let voice_config = vintage_ai_client::voice::VoiceConfig {
+                        voice_id: dialogue_config.voice_id.clone().unwrap_or_else(|| "21m00Tcm4TlvDq8ikWAM".to_string()),
+                        ..Default::default()
+                    };
+
+                    // Extract some dialogue lines to synthesize (just a few for now)
+                    let dialogue_lines: Vec<&str> = dialogue.lines().filter(|l| !l.trim().is_empty()).take(5).collect();
+                    for (i, line) in dialogue_lines.iter().enumerate() {
+                        let filename = format!("voice_dialogue_{}.mp3", i);
+                        let output_path = std::path::Path::new("assets/audio/voice").join(filename);
+                        
+                        // We use the saving helper
+                        let _ = voice_generator.save_voice_to_file(line, &voice_config, &output_path).await;
+                    }
+                }
+            }
+        }
 
         // Composing music descriptions
         progress_callback(GenerationProgress {
@@ -331,15 +340,13 @@ impl GameGenerator {
         if response.contains("\"title\"") && response.contains("\"genre\"") {
             // Try to extract and parse JSON - use safe string slicing
             if let Some(start) = response.find('{')
-                && let Some(end) = response.rfind('}')
-            {
-                // Use get() for safe UTF-8 string slicing to avoid panics
-                if let Some(json_str) = response.get(start..=end)
-                    && let Ok(config) = serde_json::from_str::<GameConfig>(json_str)
-                {
-                    return (true, Some(config));
+                && let Some(end) = response.rfind('}') {
+                    // Use get() for safe UTF-8 string slicing to avoid panics
+                    if let Some(json_str) = response.get(start..=end)
+                        && let Ok(config) = serde_json::from_str::<GameConfig>(json_str) {
+                            return (true, Some(config));
+                        }
                 }
-            }
         }
         (false, None)
     }
