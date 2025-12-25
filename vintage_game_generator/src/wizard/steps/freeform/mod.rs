@@ -57,13 +57,22 @@ pub fn render_freeform_mode(
             ui_placeholder(contexts, "Review");
         }
         FreeformStep::Conversation => {
-            conversation::render_conversation(contexts, app_state, freeform_state, commands, pipeline, stream_res);
+            conversation::render_conversation(
+                contexts,
+                app_state,
+                freeform_state,
+                commands,
+                pipeline,
+                stream_res,
+            );
         }
     }
 }
 
 fn ui_placeholder(mut contexts: EguiContexts, name: &str) {
-    let Ok(ctx) = contexts.ctx_mut() else { return; };
+    let Ok(ctx) = contexts.ctx_mut() else {
+        return;
+    };
     egui::CentralPanel::default().show(ctx, |ui| {
         ui.heading(format!("{} - Under Construction", name));
         ui.label("This step is currently being rebuilt.");

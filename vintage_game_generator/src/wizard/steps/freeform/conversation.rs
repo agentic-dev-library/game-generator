@@ -16,7 +16,9 @@ pub fn render_conversation(
     pipeline: Res<GenerationPipeline>,
     mut stream_res: ResMut<ConversationStream>,
 ) {
-    let Ok(ctx) = contexts.ctx_mut() else { return; };
+    let Ok(ctx) = contexts.ctx_mut() else {
+        return;
+    };
 
     egui::CentralPanel::default().show(ctx, |ui| {
         // Header
@@ -68,7 +70,9 @@ pub fn render_conversation(
 
             // Focus on the text input
             if response.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter)) {
-                if !freeform_state.conversation.current_input.trim().is_empty() && !freeform_state.conversation.is_processing {
+                if !freeform_state.conversation.current_input.trim().is_empty()
+                    && !freeform_state.conversation.is_processing
+                {
                     send_message(&mut freeform_state, &pipeline, stream_res.reborrow());
                 }
             }
@@ -81,7 +85,9 @@ pub fn render_conversation(
                         stream_res.receiver = None;
                     }
                 } else {
-                    if ui.button("Send").clicked() && !freeform_state.conversation.current_input.trim().is_empty() {
+                    if ui.button("Send").clicked()
+                        && !freeform_state.conversation.current_input.trim().is_empty()
+                    {
                         send_message(&mut freeform_state, &pipeline, stream_res.reborrow());
                     }
                 }
@@ -217,7 +223,9 @@ pub fn process_conversation_stream(
     mut freeform_state: ResMut<FreeformModeState>,
     mut stream_res: ResMut<ConversationStream>,
 ) {
-    let Some(rx) = &mut stream_res.receiver else { return; };
+    let Some(rx) = &mut stream_res.receiver else {
+        return;
+    };
 
     while let Ok(event) = rx.try_recv() {
         match event {
