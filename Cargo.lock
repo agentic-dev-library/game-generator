@@ -7405,6 +7405,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-openai",
+ "async-stream",
  "async-trait",
  "base64 0.22.1",
  "bevy",

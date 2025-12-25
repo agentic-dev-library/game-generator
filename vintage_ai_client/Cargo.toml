@@ -45,6 +45,7 @@ tracing.workspace = true
 async-trait.workspace = true
 uuid.workspace = true
 tokio-stream = { workspace = true, features = ["fs"] }
+async-stream = "0.3"
 
 # Template engine
 minijinja = { workspace = true, features = ["loader", "preserve_order"] }

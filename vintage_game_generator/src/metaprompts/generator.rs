@@ -220,18 +220,27 @@ impl GameGenerator {
 
                     let voice_generator = self.ai_service.voice();
                     let voice_config = vintage_ai_client::voice::VoiceConfig {
-                        voice_id: dialogue_config.voice_id.clone().unwrap_or_else(|| "21m00Tcm4TlvDq8ikWAM".to_string()),
+                        voice_id: dialogue_config
+                            .voice_id
+                            .clone()
+                            .unwrap_or_else(|| "21m00Tcm4TlvDq8ikWAM".to_string()),
                         ..Default::default()
                     };
 
                     // Extract some dialogue lines to synthesize (just a few for now)
-                    let dialogue_lines: Vec<&str> = dialogue.lines().filter(|l| !l.trim().is_empty()).take(5).collect();
+                    let dialogue_lines: Vec<&str> = dialogue
+                        .lines()
+                        .filter(|l| !l.trim().is_empty())
+                        .take(5)
+                        .collect();
                     for (i, line) in dialogue_lines.iter().enumerate() {
                         let filename = format!("voice_dialogue_{}.mp3", i);
                         let output_path = std::path::Path::new("assets/audio/voice").join(filename);
-                        
+
                         // We use the saving helper
-                        let _ = voice_generator.save_voice_to_file(line, &voice_config, &output_path).await;
+                        let _ = voice_generator
+                            .save_voice_to_file(line, &voice_config, &output_path)
+                            .await;
                     }
                 }
             }
@@ -340,13 +349,15 @@ impl GameGenerator {
         if response.contains("\"title\"") && response.contains("\"genre\"") {
             // Try to extract and parse JSON - use safe string slicing
             if let Some(start) = response.find('{')
-                && let Some(end) = response.rfind('}') {
-                    // Use get() for safe UTF-8 string slicing to avoid panics
-                    if let Some(json_str) = response.get(start..=end)
-                        && let Ok(config) = serde_json::from_str::<GameConfig>(json_str) {
-                            return (true, Some(config));
-                        }
+                && let Some(end) = response.rfind('}')
+            {
+                // Use get() for safe UTF-8 string slicing to avoid panics
+                if let Some(json_str) = response.get(start..=end)
+                    && let Ok(config) = serde_json::from_str::<GameConfig>(json_str)
+                {
+                    return (true, Some(config));
                 }
+            }
         }
         (false, None)
     }

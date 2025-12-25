@@ -391,7 +391,11 @@ impl AiClient {
                 });
                 let voice_gen = self.service.voice();
 
-                let cache_key = format!("voice_{}_{}", voice_config.voice_id, &text[..text.len().min(50)]);
+                let cache_key = format!(
+                    "voice_{}_{}",
+                    voice_config.voice_id,
+                    &text[..text.len().min(50)]
+                );
                 let cache_hit = voice_gen.is_cached(&cache_key).await;
 
                 let result = voice_gen.generate_voice(&text, &voice_config).await?;

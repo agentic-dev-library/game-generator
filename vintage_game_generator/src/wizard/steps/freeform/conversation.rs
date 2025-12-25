@@ -181,24 +181,13 @@ fn send_message(
         if let Some(generator) = generator_lock.as_ref() {
             // Start or continue conversation
             if let Some(conversation_id_ref) = &conversation_id {
-                let result = generator
-                    .continue_game_design_conversation_stream(conversation_id_ref, &message)
-                    .await;
-
-                match result {
-                    Ok(stream) => {
-                        futures::pin_mut!(stream);
-                        while let Some(token_result) = stream.next().await {
-                            match token_result {
-                                Ok(token) => {
-                                    let _ = tx.send(ConversationStreamEvent::Token(token));
-                                }
-                                Err(e) => {
-                                    let _ = tx.send(ConversationStreamEvent::Error(e.to_string()));
-                                    break;
-                                }
-                            }
-                        }
+                match generator
+                    .continue_game_design_conversation(conversation_id_ref, &message)
+                    .await
+                {
+                    Ok((response, _is_complete, _game_config)) => {
+                        // Send the response as a single token (non-streaming)
+                        let _ = tx.send(ConversationStreamEvent::Token(response));
                         let _ = tx.send(ConversationStreamEvent::Finished);
                     }
                     Err(e) => {

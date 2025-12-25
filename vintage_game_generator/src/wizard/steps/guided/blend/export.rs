@@ -244,7 +244,10 @@ pub fn generate_ai_prompt(
 }
 
 /// Export UI for showing export options
-pub fn render_export_ui(ui: &mut egui::Ui, state: &mut crate::wizard::steps::guided::GuidedModeState) {
+pub fn render_export_ui(
+    ui: &mut egui::Ui,
+    state: &mut crate::wizard::steps::guided::GuidedModeState,
+) {
     ui.heading("📤 Export & Voice Options");
     ui.separator();
 
@@ -257,7 +260,7 @@ pub fn render_export_ui(ui: &mut egui::Ui, state: &mut crate::wizard::steps::gui
     ui.group(|ui| {
         ui.label("🎙️ Voice Synthesis (ElevenLabs)");
         ui.checkbox(&mut state.use_voice, "Enable voice acting for dialogue");
-        
+
         if state.use_voice {
             ui.horizontal(|ui| {
                 ui.label("Select Voice:");
@@ -272,7 +275,11 @@ pub fn render_export_ui(ui: &mut egui::Ui, state: &mut crate::wizard::steps::gui
                             ("Josh", "TxGEqnSAs9auRW9pZOdR"),
                         ];
                         for (name, id) in voices {
-                            ui.selectable_value(&mut state.selected_voice, Some(id.to_string()), name);
+                            ui.selectable_value(
+                                &mut state.selected_voice,
+                                Some(id.to_string()),
+                                name,
+                            );
                         }
                     });
             });
@@ -283,16 +290,18 @@ pub fn render_export_ui(ui: &mut egui::Ui, state: &mut crate::wizard::steps::gui
 
     ui.horizontal(|ui| {
         if ui.button("📄 Copy TOML").clicked()
-            && let Some(toml) = export_to_toml(state) {
-                // TODO: Copy to clipboard
-                ui.ctx().copy_text(toml);
-            }
+            && let Some(toml) = export_to_toml(state)
+        {
+            // TODO: Copy to clipboard
+            ui.ctx().copy_text(toml);
+        }
 
         if ui.button("📋 Copy JSON").clicked()
-            && let Some(json) = export_to_json(state) {
-                // TODO: Copy to clipboard
-                ui.ctx().copy_text(json.to_string());
-            }
+            && let Some(json) = export_to_json(state)
+        {
+            // TODO: Copy to clipboard
+            ui.ctx().copy_text(json.to_string());
+        }
 
         if ui.button("🤖 Copy AI Prompt").clicked() {
             match generate_ai_prompt(state) {

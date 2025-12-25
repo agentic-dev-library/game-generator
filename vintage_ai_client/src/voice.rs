@@ -2,21 +2,20 @@
 //!
 //! This module provides text-to-speech capabilities for game dialogue and narration.
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use super::cache::{AiCache, CachedData};
+use super::cache::AiCache;
 use super::tokens::TokenCounter;
 
 #[cfg(feature = "voice")]
 use sha2::{Digest, Sha256};
 
 #[cfg(feature = "voice")]
-use llm::tts::{TtsProvider, Voice, ElevenLabsConfig};
+use llm::tts::{ElevenLabsConfig, TtsProvider, Voice};
 
 /// Voice generator for game dialogue and narration
 #[derive(Clone)]
@@ -67,10 +66,7 @@ impl Default for VoiceConfig {
 
 impl VoiceGenerator {
     /// Create a new voice generator
-    pub fn new(
-        cache: Arc<Mutex<AiCache>>,
-        token_counter: Arc<Mutex<TokenCounter>>,
-    ) -> Self {
+    pub fn new(cache: Arc<Mutex<AiCache>>, token_counter: Arc<Mutex<TokenCounter>>) -> Self {
         let api_key = std::env::var("ELEVENLABS_API_KEY").unwrap_or_default();
         Self {
             cache,
@@ -80,11 +76,7 @@ impl VoiceGenerator {
     }
 
     /// Generate voice audio for a piece of text
-    pub async fn generate_voice(
-        &self,
-        text: &str,
-        config: &VoiceConfig,
-    ) -> Result<Vec<u8>> {
+    pub async fn generate_voice(&self, _text: &str, _config: &VoiceConfig) -> Result<Vec<u8>> {
         #[cfg(not(feature = "voice"))]
         {
             anyhow::bail!("Voice feature is not enabled. Enable 'voice' feature to use ElevenLabs.")
@@ -100,7 +92,10 @@ impl VoiceGenerator {
             let mut params = HashMap::new();
             params.insert("voice_id".to_string(), config.voice_id.clone());
             params.insert("model".to_string(), config.model.clone());
-            params.insert("text_hash".to_string(), format!("{:x}", sha2::Sha256::digest(text.as_bytes())));
+            params.insert(
+                "text_hash".to_string(),
+                format!("{:x}", sha2::Sha256::digest(text.as_bytes())),
+            );
 
             let cache_key = self
                 .cache
@@ -127,7 +122,9 @@ impl VoiceGenerator {
             });
 
             // Generate audio
-            let audio_data = tts.generate(text).await
+            let audio_data = tts
+                .generate(text)
+                .await
                 .context("Failed to generate voice audio from ElevenLabs")?;
 
             // Cache result
@@ -135,11 +132,15 @@ impl VoiceGenerator {
             for (k, v) in params {
                 cache_params.insert(k, serde_json::Value::String(v));
             }
-            
+
             self.cache
                 .lock()
                 .await
-                .put(cache_key, CachedData::Binary(audio_data.clone()), cache_params)
+                .put(
+                    cache_key,
+                    CachedData::Binary(audio_data.clone()),
+                    cache_params,
+                )
                 .await?;
 
             // Record usage (simplified token count for voice)
@@ -161,11 +162,11 @@ impl VoiceGenerator {
         output_path: &Path,
     ) -> Result<()> {
         let audio_data = self.generate_voice(text, config).await?;
-        
+
         if let Some(parent) = output_path.parent() {
             std::fs::create_dir_all(parent)?;
         }
-        
+
         std::fs::write(output_path, audio_data)?;
         Ok(())
     }

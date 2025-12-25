@@ -91,6 +91,8 @@ fn create_ai_config(args: &Args) -> AiConfig {
         image_model: args.image_model.clone(),
         audio_model: args.audio_model.clone(),
         embedding_model: "text-embedding-3-small".to_string(),
+        voice_id: "21m00Tcm4TlvDq8ikWAM".to_string(), // Rachel voice
+        voice_model: "eleven_multilingual_v2".to_string(),
 
         // Generation Parameters
         temperature: args.temperature,
