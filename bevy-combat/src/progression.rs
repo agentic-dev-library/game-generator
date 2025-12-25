@@ -48,9 +48,22 @@ pub struct LevelUpEvent {
 /// System that handles XP gain from combat
 pub fn handle_xp_gain(
     _commands: Commands,
-    _level_up_events: EventWriter<LevelUpEvent>,
-    _query: Query<(Entity, &mut Progression)>,
+    mut level_up_events: EventWriter<LevelUpEvent>,
+    mut query: Query<(Entity, &mut Progression)>,
 ) {
-    // This would typically be triggered by a Victory event or similar
-    // For now, it's just a placeholder system
+    for (entity, mut progression) in query.iter_mut() {
+        // In a real game, this would be based on actual combat results
+        // For the template, we just show how levels are processed
+        if progression.experience >= progression.next_level_xp {
+            let old_level = progression.level;
+            let levels_gained = progression.add_xp(0);
+            if levels_gained > 0 {
+                info!("Entity {:?} leveled up: {} -> {}", entity, old_level, progression.level);
+                level_up_events.write(LevelUpEvent {
+                    entity,
+                    new_level: progression.level,
+                });
+            }
+        }
+    }
 }
