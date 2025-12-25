@@ -17,7 +17,9 @@ use super::{
     conversation::{ConversationContext, ConversationManager},
     image::{ImageConfig, ImageGenerator},
     text::{TextConfig, TextGenerator},
-    AiConfig, AiGenerator, AiService,
+    AiConfig,
+    AiGenerator,
+    AiService,
 };
 
 /// The unified AI client - your one-stop shop for all AI services

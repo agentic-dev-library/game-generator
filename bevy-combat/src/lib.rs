@@ -17,7 +17,7 @@ impl Plugin for CombatPlugin {
             .register_type::<progression::Progression>()
             .register_type::<state::CombatState>()
             .register_type::<state::CombatManager>()
-            
+
             // Add states
             .init_state::<state::CombatState>()
             // Add resources
