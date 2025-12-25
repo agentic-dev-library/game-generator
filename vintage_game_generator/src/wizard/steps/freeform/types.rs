@@ -8,13 +8,13 @@ use serde::{Deserialize, Serialize};
 pub enum FreeformStep {
     #[default]
     Introduction, // Welcome and explain the process
-    BasicInfo, // Game name, genre, tagline
-    GameplayDesign, // Core mechanics, progression
-    VisualStyle, // Art style, references
-    Features, // Combat, inventory, dialogue
+    BasicInfo,         // Game name, genre, tagline
+    GameplayDesign,    // Core mechanics, progression
+    VisualStyle,       // Art style, references
+    Features,          // Combat, inventory, dialogue
     TechnicalSettings, // Performance, platforms
-    Review, // Review before conversation
-    Conversation, // AI conversation phase
+    Review,            // Review before conversation
+    Conversation,      // AI conversation phase
 }
 
 /// Main state for freeform mode

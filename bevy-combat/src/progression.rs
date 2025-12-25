@@ -60,9 +60,7 @@ pub fn handle_xp_gain(
             if levels_gained > 0 {
                 info!(
                     "Entity {:?} leveled up: {} -> {}",
-                    entity,
-                    old_level,
-                    progression.level
+                    entity, old_level, progression.level
                 );
                 level_up_events.write(LevelUpEvent {
                     entity,

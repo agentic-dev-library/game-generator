@@ -52,7 +52,9 @@ pub fn render_conversation(
                 }
 
                 // Show processing indicator
-                if freeform_state.conversation.is_processing && !freeform_state.conversation.is_streaming {
+                if freeform_state.conversation.is_processing
+                    && !freeform_state.conversation.is_streaming
+                {
                     ui.horizontal(|ui| {
                         ui.spinner();
                         ui.label("AI is thinking...");
@@ -181,7 +183,9 @@ fn send_message(
         if let Some(generator) = generator_lock.as_ref() {
             // Start or continue conversation
             let result = if let Some(id) = &conversation_id {
-                generator.continue_game_design_conversation_stream(id, &message).await
+                generator
+                    .continue_game_design_conversation_stream(id, &message)
+                    .await
             } else {
                 // If no conversation ID, start a new one
                 match generator.start_game_design_conversation(&message).await {
@@ -190,8 +194,10 @@ fn send_message(
                         // For simplicity, we'll just use the stream for subsequent messages.
                         // But since we need a stream, let's just use a dummy id for now
                         // or better, fix GameGenerator to have a proper start_stream.
-                        generator.continue_game_design_conversation_stream(&id, "").await
-                    },
+                        generator
+                            .continue_game_design_conversation_stream(&id, "")
+                            .await
+                    }
                     Err(e) => Err(e),
                 }
             };
@@ -217,7 +223,9 @@ fn send_message(
                 }
             }
         } else {
-            let _ = tx.send(ConversationStreamEvent::Error("AI Generator not initialized".to_string()));
+            let _ = tx.send(ConversationStreamEvent::Error(
+                "AI Generator not initialized".to_string(),
+            ));
         }
     });
 }

@@ -3,10 +3,10 @@
 //! This mode provides an interactive conversation interface where users can
 //! describe their game ideas and the AI helps design and generate the game.
 
-use bevy::prelude::*;
-use bevy_egui::{egui, EguiContexts};
 use crate::wizard::pipeline::GenerationPipeline;
 use crate::wizard::state::{AppState, WizardStep};
+use bevy::prelude::*;
+use bevy_egui::{EguiContexts, egui};
 
 mod conversation;
 mod types;
