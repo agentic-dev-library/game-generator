@@ -47,9 +47,9 @@ pub struct LevelUpEvent {
 
 /// System that handles XP gain from combat
 pub fn handle_xp_gain(
-    mut commands: Commands,
-    mut level_up_events: EventWriter<LevelUpEvent>,
-    mut query: Query<(Entity, &mut Progression)>,
+    _commands: Commands,
+    _level_up_events: EventWriter<LevelUpEvent>,
+    _query: Query<(Entity, &mut Progression)>,
 ) {
     // This would typically be triggered by a Victory event or similar
     // For now, it's just a placeholder system

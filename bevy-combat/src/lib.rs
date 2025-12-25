@@ -33,7 +33,6 @@ impl Plugin for CombatPlugin {
             .add_systems(Update, (
                 effects::update_effects,
                 effects::handle_madness,
-                effects::handle_void_corruption,
                 state::manage_combat_state,
             ));
     }

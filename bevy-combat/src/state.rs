@@ -25,11 +25,18 @@ pub struct CombatManager {
 pub fn manage_combat_state(
     state: Res<State<CombatState>>,
     mut next_state: ResMut<NextState<CombatState>>,
+    mut manager: ResMut<CombatManager>,
 ) {
     match state.get() {
         CombatState::Starting => {
             // Setup battle, then go to player turn
+            manager.round = 1;
             next_state.set(CombatState::PlayerTurn);
+        }
+        CombatState::Processing => {
+            // After processing actions, usually go to next turn or end battle
+            // For now, just a placeholder transition
+            next_state.set(CombatState::EnemyTurn);
         }
         _ => {}
     }

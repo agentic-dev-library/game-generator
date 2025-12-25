@@ -70,12 +70,8 @@ pub fn calculate_damage(
     damage_type: DamageType,
     config: &DamageConfig,
 ) -> (f32, bool) {
-    let mut is_critical = false;
-    
     // Check for critical hit
-    if rand::random::<f32>() < attacker_stats.crit_chance {
-        is_critical = true;
-    }
+    let is_critical = rand::random::<f32>() < attacker_stats.crit_chance;
 
     let base_damage = match damage_type {
         DamageType::Physical => {

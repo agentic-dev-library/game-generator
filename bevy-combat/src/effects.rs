@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::time::Duration;
 
 /// Types of status effects
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Reflect)]
@@ -19,6 +18,7 @@ pub enum EffectType {
 pub struct StatusEffect {
     pub effect_type: EffectType,
     pub power: f32,
+    #[serde(skip)]
     pub duration: Timer,
     pub source: Option<Entity>,
 }
@@ -76,19 +76,6 @@ pub fn handle_madness(
             // Madness causes erratic movement
             let jitter = (time.elapsed_secs() * 10.0).sin() * madness.power * 0.1;
             transform.translation.x += jitter;
-        }
-    }
-}
-
-/// Example system for handling Void Corruption
-pub fn handle_void_corruption(
-    mut query: Query<(&EffectRegistry, &mut crate::damage::CombatStats)>,
-) {
-    for (registry, mut stats) in query.iter_mut() {
-        if let Some(corruption) = registry.effects.iter().find(|e| e.effect_type == EffectType::VoidCorruption) {
-            // Void corruption reduces defense but increases magic attack
-            stats.defense -= corruption.power * 0.1;
-            stats.magic_attack += corruption.power * 0.2;
         }
     }
 }
