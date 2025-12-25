@@ -137,6 +137,8 @@
 
 ### Files Modified (This Session)
 - Created `ai-client-rs/` entire crate
+- Created `bevy-combat/` crate with generic combat systems
+- Updated `Cargo.toml` workspace and dependencies
 - Updated `memory-bank/progress.md`
 - Updated `memory-bank/activeContext.md`
 
