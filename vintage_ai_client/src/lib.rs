@@ -35,6 +35,8 @@ pub struct AiService {
     pub token_counter: Arc<Mutex<tokens::TokenCounter>>,
     /// Style consistency manager for visual coherence
     pub style_manager: Arc<Mutex<consistency::StyleManager>>,
+    /// Conversation manager for ongoing dialogues
+    pub conversation_manager: conversation::ConversationManager,
 }
 
 impl AiService {
@@ -42,12 +44,17 @@ impl AiService {
     pub fn new() -> Result<Self> {
         let config = OpenAIConfig::new();
         let client = Arc::new(Client::with_config(config));
+        let token_counter = Arc::new(Mutex::new(tokens::TokenCounter::new()));
 
         Ok(Self {
             client: client.clone(),
             cache: Arc::new(Mutex::new(cache::AiCache::new()?)),
-            token_counter: Arc::new(Mutex::new(tokens::TokenCounter::new())),
+            token_counter: token_counter.clone(),
             style_manager: Arc::new(Mutex::new(consistency::StyleManager::new())),
+            conversation_manager: conversation::ConversationManager::new(
+                client,
+                token_counter,
+            ),
         })
     }
 
@@ -87,10 +94,7 @@ impl AiService {
 
     /// Get a reference to the conversation service
     pub fn conversation(&self) -> conversation::ConversationManager {
-        conversation::ConversationManager::new(
-            self.client.clone(),
-            self.token_counter.clone(),
-        )
+        self.conversation_manager.clone()
     }
 
     /// Get a reference to the embeddings service

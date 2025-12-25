@@ -2,6 +2,7 @@
 pub mod guided;
 pub mod language;
 pub mod welcome;
+pub mod freeform;
 
 // Re-export step types and functions
 pub use language::{LanguageChoice, draw_language_step};

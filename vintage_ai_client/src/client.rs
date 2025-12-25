@@ -4,7 +4,7 @@
 //! It manages all AI service instances and provides a clean, consistent interface.
 
 use anyhow::Result;
-use futures::Stream;
+use futures::{Stream, StreamExt};
 use minijinja::{Environment, context};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -419,9 +419,18 @@ impl AiClient {
         message: String,
     ) -> Result<impl Stream<Item = Result<String>>> {
         let conversation = self.service.conversation();
-        conversation
-            .send_message_stream(conversation_id, message)
-            .await
+        let conversation_id = conversation_id.to_string();
+
+        Ok(async_stream::try_stream! {
+            let stream = conversation
+                .send_message_stream(&conversation_id, message)
+                .await?;
+            futures::pin_mut!(stream);
+
+            while let Some(item) = stream.next().await {
+                yield item?;
+            }
+        })
     }
 
     /// Update configuration

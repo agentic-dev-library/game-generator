@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
 
 use crate::wizard::config::ProjectConfig;
 use futures::{Stream, StreamExt};
@@ -146,12 +145,23 @@ impl GameGenerator {
         &self,
         conversation_id: &str,
         user_input: &str,
-    ) -> anyhow::Result<impl Stream<Item = anyhow::Result<String>>> {
+    ) -> anyhow::Result<impl Stream<Item = anyhow::Result<String>> + use<>> {
         let conversation_manager = self.ai_service.conversation();
-        conversation_manager
-            .send_message_stream(conversation_id, user_input.to_string())
-            .await
-            .map_err(|e| anyhow::anyhow!("Failed to start conversation stream: {}", e))
+        let conversation_id = conversation_id.to_string();
+        let user_input = user_input.to_string();
+
+        Ok(async_stream::try_stream! {
+            let stream = conversation_manager
+                .send_message_stream(&conversation_id, user_input)
+                .await
+                .map_err(|e| anyhow::anyhow!("Failed to start conversation stream: {}", e))?;
+            futures::pin_mut!(stream);
+
+            while let Some(item) = stream.next().await {
+                let token: String = item?;
+                yield token;
+            }
+        })
     }
 
     /// Generate full game with progress tracking
