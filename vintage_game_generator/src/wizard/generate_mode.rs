@@ -58,11 +58,11 @@ pub fn draw_generate_ui(
         app_state.wizard_step
     );
 
-    // Initialize config manager if not present
     if app_state.config_manager.is_none()
-        && let Ok(config_manager) = ConfigManager::new(&directories.project_dir, None) {
-            app_state.set_config_manager(config_manager);
-        }
+        && let Ok(config_manager) = ConfigManager::new(&directories.project_dir, None)
+    {
+        app_state.set_config_manager(config_manager);
+    }
 
     // Handle exit dialog
     if app_state.show_exit_dialog {
@@ -129,7 +129,14 @@ pub fn draw_generate_ui(
         WizardStep::FreeformMode => {
             debug!("Drawing freeform mode step");
             if let (Some(freeform_state), Some(stream_res)) = (freeform_state, stream_res) {
-                render_freeform_mode(contexts, app_state, freeform_state, commands, pipeline, stream_res);
+                render_freeform_mode(
+                    contexts,
+                    app_state,
+                    freeform_state,
+                    commands,
+                    pipeline,
+                    stream_res,
+                );
             } else {
                 warn!("No freeform state found, setting up freeform mode");
                 setup_freeform_mode(commands);
