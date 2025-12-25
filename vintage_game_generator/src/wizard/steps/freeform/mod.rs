@@ -3,19 +3,16 @@
 //! This mode provides an interactive conversation interface where users can
 //! describe their game ideas and the AI helps design and generate the game.
 
-use bevy::prelude::*;
-use bevy_egui::{egui, EguiContexts};
 use crate::wizard::pipeline::GenerationPipeline;
-use crate::wizard::state::{AppState, WizardStep};
+use crate::wizard::state::AppState;
+use bevy::prelude::*;
+use bevy_egui::{EguiContexts, egui};
 
-mod types;
 mod conversation;
-mod wizard_steps;
-mod ai_interface;
+mod types;
 
-pub use types::*;
 pub use conversation::*;
-pub use wizard_steps::*;
+pub use types::*;
 
 /// Main entry point for rendering freeform mode
 pub fn render_freeform_mode(
@@ -29,30 +26,47 @@ pub fn render_freeform_mode(
     // Route to appropriate sub-step
     match &freeform_state.current_step {
         FreeformStep::Introduction => {
-            wizard_steps::render_introduction(contexts, app_state, freeform_state);
+            ui_placeholder(contexts, "Introduction");
         }
         FreeformStep::BasicInfo => {
-            wizard_steps::render_basic_info(contexts, app_state, freeform_state);
+            ui_placeholder(contexts, "Basic Info");
         }
         FreeformStep::GameplayDesign => {
-            wizard_steps::render_gameplay_design(contexts, app_state, freeform_state);
+            ui_placeholder(contexts, "Gameplay Design");
         }
         FreeformStep::VisualStyle => {
-            wizard_steps::render_visual_style(contexts, app_state, freeform_state);
+            ui_placeholder(contexts, "Visual Style");
         }
         FreeformStep::Features => {
-            wizard_steps::render_features(contexts, app_state, freeform_state);
+            ui_placeholder(contexts, "Features");
         }
         FreeformStep::TechnicalSettings => {
-            wizard_steps::render_technical_settings(contexts, app_state, freeform_state);
+            ui_placeholder(contexts, "Technical Settings");
         }
         FreeformStep::Review => {
-            wizard_steps::render_review(contexts, app_state, freeform_state);
+            ui_placeholder(contexts, "Review");
         }
         FreeformStep::Conversation => {
-            conversation::render_conversation(contexts, app_state, freeform_state, commands, pipeline, stream_res);
+            conversation::render_conversation(
+                contexts,
+                app_state,
+                freeform_state,
+                commands,
+                pipeline,
+                stream_res,
+            );
         }
     }
+}
+
+fn ui_placeholder(mut contexts: EguiContexts, name: &str) {
+    let Ok(ctx) = contexts.ctx_mut() else {
+        return;
+    };
+    egui::CentralPanel::default().show(ctx, |ui| {
+        ui.heading(format!("{} - Under Construction", name));
+        ui.label("This step is currently being rebuilt.");
+    });
 }
 
 /// Setup resources for freeform mode
@@ -62,7 +76,7 @@ pub fn setup_freeform_mode(mut commands: Commands) {
     commands.insert_resource(ConversationStream::default());
 
     // Initialize AI client if needed
-    if let Ok(api_key) = std::env::var("OPENAI_API_KEY") {
+    if std::env::var("OPENAI_API_KEY").is_ok() {
         // Initialize AI resources
         info!("OpenAI API key found, AI conversation will be available");
     } else {
