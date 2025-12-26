@@ -1,7 +1,11 @@
 # Vintage Game Generator (Rust)
 
-[![CI](https://github.com/jbcom/rust-vintage-game-generator/workflows/Rust%20CI/badge.svg)](https://github.com/jbcom/rust-vintage-game-generator/actions)
+[![CI](https://github.com/agentic-dev-library/game-generator/workflows/Rust%20CI/badge.svg)](https://github.com/agentic-dev-library/game-generator/actions)
 [![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](LICENSE)
+
+## 🏢 Enterprise Context
+
+**Agentic** is the AI & Agents division of the [jbcom enterprise](https://jbcom.github.io). This project is part of a coherent suite of specialized tools, sharing a unified design system and interconnected with sibling organizations like [Strata](https://strata.game) and [Extended Data](https://extendeddata.dev).
 
 AI-powered retro RPG generator with multi-provider AI integration, built with the Bevy game engine.
 
