@@ -149,7 +149,7 @@ impl GameGenerator {
         &self,
         conversation_id: &str,
         user_input: &str,
-    ) -> anyhow::Result<impl Stream<Item = anyhow::Result<String>>> {
+    ) -> anyhow::Result<impl Stream<Item = anyhow::Result<String>> + use<'_>> {
         let conversation_manager = self.ai_service.conversation();
         conversation_manager
             .send_message_stream(conversation_id.to_string(), user_input.to_string())
