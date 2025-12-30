@@ -1,48 +1,45 @@
-# Vintage Game Generator (Rust)
+# Org-Specific Overrides
 
-[![CI](https://github.com/agentic-dev-library/game-generator/workflows/Rust%20CI/badge.svg)](https://github.com/agentic-dev-library/game-generator/actions)
-[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](LICENSE)
+Place files here to override enterprise defaults from jbcom/control-center.
 
-## 🏢 Enterprise Context
+## Directory Structure
 
-**Agentic** is the AI & Agents division of the [jbcom enterprise](https://jbcom.github.io). This project is part of a coherent suite of specialized tools, sharing a unified design system and interconnected with sibling organizations like [Strata](https://strata.game) and [Extended Data](https://extendeddata.dev).
-
-AI-powered retro RPG generator with multi-provider AI integration, built with the Bevy game engine.
-
-## Features
-
-- 🤖 **Multi-Provider AI**: OpenAI, Anthropic integration with intelligent caching
-- 🎮 **Complete Game Generation**: Generates playable Bevy games
-- 📝 **TOML Configuration**: Simple dev.toml-based project setup
-- 🎨 **Asset Generation**: Sprites, audio, dialogs, maps
-- 🧙‍♂️ **Interactive Wizard**: GUI for designing your RPG
-
-## Crate Structure
-
-| Crate | Description | Status |
-|-------|-------------|--------|
-| `vintage-ai-client` | AI service abstraction with caching | 🚧 Migration |
-| `vintage-blending-core` | Game similarity algorithms | 🚧 Migration |
-| `vintage-build-tools` | Build-time code generation | 🚧 Migration |
-| `vintage-game-generator` | Main application with wizard | 🚧 Migration |
-
-## Development
-
-```bash
-# Check all crates
-cargo check --all
-
-# Run tests
-cargo test --all
-
-# Run the generator
-cargo run --bin vintage-game-generator
+```
+repository-files/
+├── always-sync/          # From enterprise (don't edit)
+├── initial-only/         # From enterprise (don't edit)  
+├── python/               # From enterprise (don't edit)
+├── nodejs/               # From enterprise (don't edit)
+├── go/                   # From enterprise (don't edit)
+├── rust/                 # From enterprise (don't edit)
+├── terraform/            # From enterprise (don't edit)
+└── org-overrides/        # YOUR ORG CUSTOMIZATIONS HERE
+    ├── .github/
+    │   └── workflows/    # Org-specific workflows
+    ├── .cursor/
+    │   └── rules/        # Org-specific Cursor rules
+    ├── CLAUDE.md         # Org-specific Claude instructions
+    └── AGENTS.md         # Org-specific agent instructions
 ```
 
-## License
+## Merge Order
 
-Licensed under either of:
-- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
-- MIT license ([LICENSE-MIT](LICENSE-MIT))
+When syncing to repos, files are applied in this order:
+1. Enterprise `always-sync/` (base)
+2. Language-specific rules (python/, nodejs/, etc.)
+3. **Org overrides** (this directory - wins on conflicts)
+4. `initial-only/` (only if file doesn't exist)
 
-at your option.
+## Examples
+
+### Override CI workflow for your org
+```bash
+cp repository-files/always-sync/.github/workflows/ci.yml \
+   repository-files/org-overrides/.github/workflows/ci.yml
+# Then edit ci.yml with org-specific changes
+```
+
+### Add org-specific Cursor rule
+```bash
+echo "# My Org Rule" > repository-files/org-overrides/.cursor/rules/my-org.mdc
+```
