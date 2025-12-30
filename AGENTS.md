@@ -1,147 +1,104 @@
-# AGENTS.md
+# Agent Instructions for agentic-dev-library
 
-Comprehensive instructions for AI agents working with this repository.
+> **CRITICAL**: Read this file completely before making ANY changes. This is the definitive guide for AI agents working on this organization's repositories.
 
-## Agent Types
+## Overview
 
-| Agent | Best For | Context File |
-|-------|----------|--------------|
-| **Claude** | Complex reasoning, architecture, cross-repo work | `CLAUDE.md` |
-| **Copilot** | Issue kickoffs, targeted fixes, code generation | `.github/copilot-instructions.md` |
-| **Cursor** | IDE-integrated development | `.cursor/rules/*.mdc` |
+You are working within the **agentic-dev-library** ecosystem. This organization focuses on framework-agnostic AI orchestration, agent fleet management, and automated triage.
 
-## Before Starting Any Task
+## Critical: GitHub Authentication
 
-### 1. Check Context
 ```bash
-# Current focus and recent decisions
-cat memory-bank/activeContext.md
-
-# Session progress
-cat memory-bank/progress.md
+# ALWAYS use GITHUB_JBCOM_TOKEN for organization repos - NEVER plain GITHUB_TOKEN
+GH_TOKEN="$GITHUB_JBCOM_TOKEN" gh <command>
 ```
 
-### 2. Understand the Request
-- Read the issue/PR description completely
-- Check for linked issues or PRs
-- Look for acceptance criteria
+## Tech Stack Standards
 
-### 3. Check Existing Patterns
+| Aspect | Standard |
+|--------|----------|
+| **Python** | uv, ruff, mypy, pytest, Python 3.11+ |
+| **Node.js** | pnpm, biome, vitest, Node 22+ |
+| **Rust** | cargo, clippy, fmt |
+| **Docs** | Starlight (Astro) for main site, Markdown for internal |
+
+## Development Workflows
+
+### Python
 ```bash
-# Recent commits show coding patterns
-git log --oneline -10
-
-# Similar files show conventions
-find . -name "*.py" | head -5 | xargs head -50
+uv sync --all-extras
+uv run pytest
+uvx ruff check --fix .
+uvx ruff format .
 ```
 
-## Development Commands
-
-<!-- These will be overridden by language-specific instructions -->
-
-### Testing
+### Node.js
 ```bash
-# Run tests (check package.json or pyproject.toml for exact command)
-npm test        # Node.js
-uv run pytest   # Python
-go test ./...   # Go
+pnpm install
+pnpm run check
+pnpm run test
 ```
 
-### Linting
+### Rust
 ```bash
-npm run lint    # Node.js
-uvx ruff check  # Python
-golangci-lint run  # Go
+cargo check
+cargo test
+cargo clippy
+cargo fmt
 ```
 
-### Building
-```bash
-npm run build   # Node.js
-uv build        # Python
-go build        # Go
-```
-
-## Commit Message Format
+## Commit Messages
 
 Use [Conventional Commits](https://www.conventionalcommits.org/):
 
-```
-<type>(<scope>): <description>
+| Prefix | When |
+|--------|------|
+| `feat(scope):` | New feature |
+| `fix(scope):` | Bug fix |
+| `docs:` | Documentation only |
+| `refactor(scope):` | Code change (no behavior change) |
+| `test:` | Adding/updating tests |
+| `chore:` | Maintenance, deps |
 
-[optional body]
+## Documentation Branding
 
-[optional footer]
-```
-
-### Types
-- `feat`: New feature (minor version bump)
-- `fix`: Bug fix (patch version bump)
-- `docs`: Documentation only
-- `style`: Formatting, no code change
-- `refactor`: Code restructure, no behavior change
-- `test`: Adding/updating tests
-- `chore`: Maintenance tasks
-
-### Examples
-```bash
-feat(auth): add OAuth2 support
-fix(api): handle null response correctly
-docs: update installation instructions
-test(utils): add edge case coverage
-chore(deps): update dependencies
-```
-
-## Error Recovery
-
-### Tests Failing
-1. Read the error message carefully
-2. Check if it's a flaky test (run again)
-3. Check recent commits that might have caused it
-4. Fix the root cause, not just the symptom
-
-### Lint Errors
-1. Run auto-fix first (`--fix` flag)
-2. Manually fix remaining issues
-3. Don't disable rules without justification
-
-### Build Errors
-1. Check for type errors first
-2. Ensure dependencies are installed
-3. Check for missing files or imports
+All documentation must follow the **jbcom dark theme** design system.
+- Primary Cyan: `#06b6d4`
+- Background: `#0a0f1a`
+- Fonts: Space Grotesk (Headings), Inter (Body), JetBrains Mono (Code)
 
 ## Memory Bank Protocol
 
-### Reading Context
-```bash
-# Always check before starting
-cat memory-bank/activeContext.md
-```
+Every repository uses the **Memory Bank** pattern for session continuity.
 
-### Updating Context
-```bash
-# After completing significant work
-cat >> memory-bank/activeContext.md << 'EOF'
+| File | Purpose |
+|------|---------|
+| `memory-bank/activeContext.md` | Current state and focus |
+| `memory-bank/progress.md` | Session-by-session log |
 
-## Session: $(date +%Y-%m-%d)
+**Session End Protocol**:
+1. Update `memory-bank/activeContext.md` with what was completed.
+2. Update `memory-bank/progress.md` with the new session entry.
+3. Commit memory bank changes with `docs: update memory bank`.
 
-### Completed
-- [x] Description of completed work
+## Agent Autonomy Policy
 
-### For Next Agent
-- [ ] Remaining tasks
-EOF
-```
+### YOU HAVE FULL AUTONOMY
 
-## What NOT To Do
+When assigned to a PR or issue, you are **explicitly authorized** to:
 
-- ❌ Don't make unrelated changes
-- ❌ Don't skip tests
-- ❌ Don't ignore linting errors
-- ❌ Don't commit without meaningful message
-- ❌ Don't push directly to main (use PRs)
-- ❌ Don't add dependencies without justification
+1. **PUSH** - `git push` to update PRs.
+2. **REBASE** - Rebase onto main/master to resolve conflicts.
+3. **FIX** - Make any changes needed to pass CI checks.
+4. **MERGE** - Merge PRs using squash merge when CI is green.
+5. **CREATE** - Create new branches, files, and PRs as needed.
 
-## Repository-Specific Instructions
+### DO NOT ASK FOR PERMISSION
 
-<!-- Add repository-specific agent instructions below -->
+- You do NOT need to ask before pushing.
+- You do NOT need to ask before merging.
+- You do NOT need to ask before force-pushing.
+- Execute immediately when given instructions.
 
+When you see `/jules` or `/cursor` followed by instructions, execute them immediately.
+This means: Do it now. Don't ask. You have permission.
