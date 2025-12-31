@@ -45,8 +45,9 @@ venv/
 
 # AI / Agents
 memory-bank/
-.cursor/
+# .cursor/ is managed below
 ! .cursor/rules/
+! .cursor/rules/*
 ! .cursor/Dockerfile
 ! .cursor/environment.json
-! ! .cursor/mcp.json
+! .cursor/mcp.json
