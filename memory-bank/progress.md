@@ -220,3 +220,9 @@
 - Complete guided mode testing
 - Add freeform mode with under construction overlay
 - Update documentation
+
+### 2025-12-31
+- Fixed CI failures in `game-generator` following major dependency bumps.
+- Resolved ecosystem-wide configuration issues in `control-center`.
+- Merged critical stability fixes into `main` for both `game-generator` and `control-center`.
+- Cleaned up repository artifacts and enforced stricter `.gitignore` policies.
