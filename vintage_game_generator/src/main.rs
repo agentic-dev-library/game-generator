@@ -206,7 +206,7 @@ fn main() {
                 AppMode::Generate => "Vintage Game Generator".to_string(),
                 AppMode::List => "Vintage Game Generator - Browse Projects".to_string(),
             },
-            resolution: (1280.0, 800.0).into(),
+            resolution: (1280, 800).into(),
             ..default()
         }),
         ..default()

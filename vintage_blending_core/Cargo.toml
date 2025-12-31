@@ -13,7 +13,7 @@ petgraph.workspace = true
 anyhow.workspace = true
 
 # Optional dependencies for advanced features
-nalgebra = { version = "0.33", optional = true }
+nalgebra = { version = "0.34", optional = true }
 
 [features]
 default = []

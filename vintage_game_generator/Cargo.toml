@@ -13,7 +13,7 @@ bevy = { workspace = true, features = ["dynamic_linking"] }
 bevy_egui.workspace = true
 bevy-inspector-egui.workspace = true
 egui_dock.workspace = true
-catppuccin-egui = { workspace = true, features = ["egui31"] }
+catppuccin-egui = { workspace = true, features = ["egui33"] }
 
 # CLI and Configuration
 clap = { version = "4.5", features = ["derive"] }

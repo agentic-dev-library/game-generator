@@ -126,8 +126,9 @@ pub fn render_overlay(ui: &mut egui::Ui, config: &OverlayConfig) -> Option<Strin
 
                     if let Some((width, outline_color)) = outline {
                         // Use egui's stroke for text outline effect
-                        let galley = ui
-                            .fonts(|f| f.layout_no_wrap(text.to_string(), font_id.clone(), *color));
+                        let galley = ui.fonts_mut(|f| {
+                            f.layout_no_wrap(text.to_string(), font_id.clone(), *color)
+                        });
                         let text_pos = response.rect.center() - galley.size() / 2.0;
 
                         // Draw outline by rendering text multiple times with offset

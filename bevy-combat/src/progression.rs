@@ -39,7 +39,7 @@ impl Progression {
 }
 
 /// Event fired when an entity levels up
-#[derive(Event, Debug, Clone, Reflect)]
+#[derive(Message, Debug, Clone, Reflect)]
 pub struct LevelUpEvent {
     pub entity: Entity,
     pub new_level: u32,
@@ -48,7 +48,7 @@ pub struct LevelUpEvent {
 /// System that handles XP gain from combat
 pub fn handle_xp_gain(
     _commands: Commands,
-    mut level_up_events: EventWriter<LevelUpEvent>,
+    mut level_up_events: MessageWriter<LevelUpEvent>,
     mut query: Query<(Entity, &mut Progression)>,
 ) {
     for (entity, mut progression) in query.iter_mut() {

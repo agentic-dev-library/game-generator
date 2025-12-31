@@ -62,7 +62,7 @@ pub fn update_effects(time: Res<Time>, mut query: Query<&mut EffectRegistry>) {
     for mut registry in query.iter_mut() {
         registry.effects.retain_mut(|effect| {
             effect.duration.tick(time.delta());
-            !effect.duration.finished()
+            !effect.duration.is_finished()
         });
     }
 }

@@ -37,7 +37,7 @@ impl Default for CombatStats {
 }
 
 /// Event fired when damage is dealt
-#[derive(Event, Debug, Clone, Reflect)]
+#[derive(Message, Debug, Clone, Reflect)]
 pub struct DamageEvent {
     pub attacker: Entity,
     pub target: Entity,

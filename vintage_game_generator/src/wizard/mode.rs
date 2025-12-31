@@ -7,7 +7,7 @@ pub enum AppMode {
     List,
 }
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct SwitchModeEvent {
     pub new_mode: AppMode,
     pub project_path: Option<PathBuf>,

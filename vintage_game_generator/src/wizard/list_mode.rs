@@ -15,7 +15,7 @@ pub fn draw_list_ui(
     mut contexts: EguiContexts,
     directories: Res<AppDirectories>,
     mut state: ResMut<ListModeState>,
-    mut switch_mode_events: EventWriter<SwitchModeEvent>,
+    mut switch_mode_events: MessageWriter<SwitchModeEvent>,
 ) {
     // Load projects on first run
     if state.projects.is_empty() {

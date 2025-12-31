@@ -17,7 +17,7 @@ pub fn draw_app_ui(
     mut app_state: ResMut<AppState>,
     directories: Res<AppDirectories>,
     pipeline: Res<GenerationPipeline>,
-    mut switch_mode_events: EventWriter<SwitchModeEvent>,
+    mut switch_mode_events: MessageWriter<SwitchModeEvent>,
     mut ui_state: ResMut<UIState>,
 ) {
     // Initialize wizard if needed
