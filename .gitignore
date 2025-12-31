@@ -21,14 +21,7 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# AI / Agents
-memory-bank/
-.cursor/
-! .cursor/rules/
-! .cursor/Dockerfile
-! .cursor/environment.json
-! .cursor/mcp.json
+.pnpm-debug.log*
 
 # Rust
 target/
@@ -38,7 +31,6 @@ Cargo.lock
 node_modules/
 dist/
 .npm
-.pnpm-debug.log*
 
 # Python
 __pycache__/
@@ -50,3 +42,11 @@ venv/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+
+# AI / Agents
+memory-bank/
+.cursor/
+! .cursor/rules/
+! .cursor/Dockerfile
+! .cursor/environment.json
+! ! .cursor/mcp.json
