@@ -23,8 +23,8 @@ impl Plugin for CombatPlugin {
             .init_resource::<damage::DamageConfig>()
             .init_resource::<state::CombatManager>()
             // Add events
-            .add_event::<damage::DamageEvent>()
-            .add_event::<progression::LevelUpEvent>()
+            .add_message::<damage::DamageEvent>()
+            .add_message::<progression::LevelUpEvent>()
             // Add systems
             .add_systems(
                 Update,

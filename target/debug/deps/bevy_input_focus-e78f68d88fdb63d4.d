@@ -1,0 +1,8 @@
+/workspace/target/debug/deps/bevy_input_focus-e78f68d88fdb63d4.d: /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_input_focus-0.17.3/src/lib.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_input_focus-0.17.3/src/directional_navigation.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_input_focus-0.17.3/src/tab_navigation.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_input_focus-0.17.3/src/autofocus.rs
+
+/workspace/target/debug/deps/libbevy_input_focus-e78f68d88fdb63d4.rmeta: /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_input_focus-0.17.3/src/lib.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_input_focus-0.17.3/src/directional_navigation.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_input_focus-0.17.3/src/tab_navigation.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_input_focus-0.17.3/src/autofocus.rs
+
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_input_focus-0.17.3/src/lib.rs:
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_input_focus-0.17.3/src/directional_navigation.rs:
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_input_focus-0.17.3/src/tab_navigation.rs:
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_input_focus-0.17.3/src/autofocus.rs:

@@ -36,12 +36,12 @@ pub fn draw_generate_ui(
     mut app_state: ResMut<AppState>,
     directories: Res<AppDirectories>,
     pipeline: Res<GenerationPipeline>,
-    _switch_mode_events: EventWriter<SwitchModeEvent>,
+    _switch_mode_events: MessageWriter<SwitchModeEvent>,
     guided_state: Option<ResMut<GuidedModeState>>,
     freeform_state: Option<ResMut<FreeformModeState>>,
     stream_res: Option<ResMut<ConversationStream>>,
     commands: Commands,
-    mut exit_events: EventWriter<AppExit>,
+    mut exit_events: MessageWriter<AppExit>,
 ) {
     trace!("draw_generate_ui called");
 

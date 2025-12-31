@@ -21,7 +21,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2-dev libudev-dev
+          sudo apt-get install -y libasound2-dev libudev-dev pkg-config libx11-dev libwayland-dev libxkbcommon-dev libssl-dev
       - run: cargo check --all-targets --all-features
 
   test:
@@ -35,7 +35,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2-dev libudev-dev
+          sudo apt-get install -y libasound2-dev libudev-dev pkg-config libx11-dev libwayland-dev libxkbcommon-dev libssl-dev
       - run: cargo test --all-features
 
   clippy:
@@ -50,7 +50,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2-dev libudev-dev
+          sudo apt-get install -y libasound2-dev libudev-dev pkg-config libx11-dev libwayland-dev libxkbcommon-dev libssl-dev
       - run: cargo clippy --all-targets --all-features -- -D warnings
 
   fmt:

@@ -1,0 +1,13 @@
+/workspace/target/debug/deps/bevy_egui-34477c5a417fb139.d: /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/lib.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/helpers.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/input.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/output.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/picking.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/render/mod.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/render/render_pass.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/render/systems.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/render/egui.wgsl
+
+/workspace/target/debug/deps/libbevy_egui-34477c5a417fb139.rmeta: /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/lib.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/helpers.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/input.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/output.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/picking.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/render/mod.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/render/render_pass.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/render/systems.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/render/egui.wgsl
+
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/lib.rs:
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/helpers.rs:
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/input.rs:
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/output.rs:
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/picking.rs:
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/render/mod.rs:
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/render/render_pass.rs:
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/render/systems.rs:
+/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy_egui-0.38.1/src/render/egui.wgsl:

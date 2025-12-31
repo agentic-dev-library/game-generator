@@ -32,7 +32,7 @@ impl Plugin for WizardPlugin {
         app.insert_resource(AppState::new())
             .insert_resource(GenerationPipeline::new())
             .insert_resource(watchers::ConfigModificationTracker::default())
-            .add_event::<SwitchModeEvent>()
+            .add_message::<SwitchModeEvent>()
             .add_systems(Startup, setup_app)
             .add_systems(Update, handle_mode_switch);
 
@@ -61,7 +61,7 @@ fn in_mode(mode: AppMode) -> impl Fn(Res<AppMode>) -> bool {
 
 /// Handle mode switch events
 fn handle_mode_switch(
-    mut events: EventReader<SwitchModeEvent>,
+    mut events: MessageReader<SwitchModeEvent>,
     mut mode: ResMut<AppMode>,
     mut directories: ResMut<AppDirectories>,
     mut windows: Query<&mut Window>,

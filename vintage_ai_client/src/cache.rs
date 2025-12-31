@@ -309,7 +309,7 @@ impl AiCache {
 
             if path.extension().and_then(|s| s.to_str()) == Some("cache")
                 && let Ok(content) = tokio::fs::read(&path).await
-                && let Ok(item) = bincode::deserialize::<CachedItem>(&content)
+                && let Ok((item, _)) = bincode::serde::decode_from_slice::<CachedItem, _>(&content, bincode::config::standard())
                 && item.metadata.expires_at <= now
             {
                 tokio::fs::remove_file(&path).await?;
@@ -360,9 +360,9 @@ impl AiCache {
 
         let item: CachedItem = if self.config.enable_compression {
             let decompressed = zstd::decode_all(&content[..])?;
-            bincode::deserialize(&decompressed)?
+            bincode::serde::decode_from_slice(&decompressed, bincode::config::standard())?.0
         } else {
-            bincode::deserialize(&content)?
+            bincode::serde::decode_from_slice(&content, bincode::config::standard())?.0
         };
 
         Ok(item)
@@ -373,10 +373,10 @@ impl AiCache {
         let path = self.cache_path(&item.key);
 
         let content = if self.config.enable_compression {
-            let serialized = bincode::serialize(item)?;
+            let serialized = bincode::serde::encode_to_vec(item, bincode::config::standard())?;
             zstd::encode_all(&serialized[..], 3)?
         } else {
-            bincode::serialize(item)?
+            bincode::serde::encode_to_vec(item, bincode::config::standard())?
         };
 
         tokio::fs::write(&path, content).await?;
