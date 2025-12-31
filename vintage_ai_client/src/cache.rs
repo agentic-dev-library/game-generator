@@ -309,7 +309,10 @@ impl AiCache {
 
             if path.extension().and_then(|s| s.to_str()) == Some("cache")
                 && let Ok(content) = tokio::fs::read(&path).await
-                && let Ok((item, _)) = bincode::serde::decode_from_slice::<CachedItem, _>(&content, bincode::config::standard())
+                && let Ok((item, _)) = bincode::serde::decode_from_slice::<CachedItem, _>(
+                    &content,
+                    bincode::config::standard(),
+                )
                 && item.metadata.expires_at <= now
             {
                 tokio::fs::remove_file(&path).await?;
