@@ -1,1 +1,0 @@
-{"rustc":4758242423518056681,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[17502350694249049818,"build_script_build",false,8393573284688775798]],"local":[{"RerunIfChanged":{"output":"debug/build/catppuccin-egui-57299fd624bc34e5/output","paths":["src/themes.rs.tera"]}}],"rustflags":[],"config":0,"compile_kind":0}

@@ -1,2 +1,0 @@
-cargo:warning=Skipping game data generation: GIANTBOMB_API_KEY not found in environment. Please set it in your .env or .env.local file.
-cargo:warning=Set GIANTBOMB_API_KEY to generate real game data

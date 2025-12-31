@@ -1,5 +1,0 @@
-cargo:rerun-if-changed=templates/giantbomb/mod.rs.jinja
-cargo:rerun-if-changed=templates/giantbomb/games.rs.jinja
-cargo:rerun-if-changed=templates/giantbomb/platforms.rs.jinja
-cargo:rerun-if-changed=templates/giantbomb/eras.rs.jinja
-cargo:rerun-if-changed=templates/giantbomb/graph.rs.jinja

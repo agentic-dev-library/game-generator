@@ -1,9 +1,0 @@
-/workspace/target/debug/deps/epaint_default_fonts-e870d16164ce9dbb.d: /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/lib.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/../fonts/Hack-Regular.ttf /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/../fonts/NotoEmoji-Regular.ttf /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/../fonts/Ubuntu-Light.ttf /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/../fonts/emoji-icon-font.ttf
-
-/workspace/target/debug/deps/libepaint_default_fonts-e870d16164ce9dbb.rmeta: /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/lib.rs /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/../fonts/Hack-Regular.ttf /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/../fonts/NotoEmoji-Regular.ttf /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/../fonts/Ubuntu-Light.ttf /usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/../fonts/emoji-icon-font.ttf
-
-/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/lib.rs:
-/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/../fonts/Hack-Regular.ttf:
-/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/../fonts/NotoEmoji-Regular.ttf:
-/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/../fonts/Ubuntu-Light.ttf:
-/usr/local/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/epaint_default_fonts-0.33.3/src/../fonts/emoji-icon-font.ttf:
