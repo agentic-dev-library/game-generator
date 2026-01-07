@@ -31,7 +31,7 @@ anyhow.workspace = true
 # Utilities
 dotenv.workspace = true
 chrono.workspace = true
-tiktoken-rs = "0.6" # Keeping 0.7 here if it's specifically needed, or switch to workspace
+tiktoken-rs = "0.7" # Keeping 0.7 here if it's specifically needed, or switch to workspace
 
 # File system
 fs_extra.workspace = true
