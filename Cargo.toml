@@ -16,7 +16,7 @@ homepage = "https://github.com/jbcom/rust-vintage-game-generator"
 async-openai = { version = "0.32", features = ["full"] }
 
 # Async runtime
-tokio = { version = "1.48", features = ["full"] }
+tokio = { version = "1.49", features = ["full"] }
 async-trait = "0.1"
 tokio-stream = "0.1"
 futures = "0.3"
@@ -39,14 +39,14 @@ anyhow = "1.0"
 thiserror = "2.0"
 
 # HTTP client
-reqwest = { version = "0.12", features = ["json"] }
-reqwest-middleware = "0.4"
+reqwest = { version = "0.13", features = ["json"] }
+reqwest-middleware = "0.5"
 
 # UUID
 uuid = { version = "1.19", features = ["v4"] }
 
 # Bevy integration (for UI in generator app)
-bevy = "0.17.3"
+bevy = "0.18.0"
 bevy_egui = "0.38"
 bevy-inspector-egui = "0.35"
 egui_dock = "0.18"
